@@ -6,8 +6,6 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
     {
       onInit: function () {
         debugger
-        var oButton = this.byId("__button15");
-        console.log(oButton);
       },
       // Handle scrolling behavior
       onScroll: function (oEvent) {

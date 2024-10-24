@@ -53,8 +53,6 @@ sap.ui.define(
             },
             function () {
               this.completeTask(true, approveOutcomeId);
-              debugger
-
               debugger;
 
               var oRootControl = this.getRootControl();
@@ -180,9 +178,7 @@ sap.ui.define(
                     console.error("Error updating form data: " + textStatus + ' ' + errorThrown);
                   }
                 });
-
               }
-
             },
             this
           );
