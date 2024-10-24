@@ -1,0 +1,661 @@
+<mvc:View
+    xmlns:upload="sap.m.upload"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:layout="sap.ui.layout"
+    xmlns:core="sap.ui.core"
+    xmlns:suite="sap.suite.ui.commons"
+    xmlns="sap.uxap"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns:m="sap.m"
+    xmlns:ui="sap.ui.table"
+    controllerName="FinanceWorkflow.workflowuiFinance.controller.App"
+    displayBlock="true"
+>
+    <m:App id="app1">
+        <ObjectPageLayout id="object1">
+            <!--  Object Page Header  -->
+            <headerTitle>
+                <ObjectPageHeader
+                    id="headerForTest"
+                    objectTitle="{context>/invoiceno}"
+                />
+            </headerTitle>
+            <!--  Object Page Sections  -->
+            <sections>
+                <!--  Customer Details Section  -->
+                <ObjectPageSection
+                    id="generalInformationSection"
+                    title="General Information"
+                    titleUppercase="false"
+                >
+                    <subSections>
+                        <ObjectPageSubSection
+                            id="generalInformationSubSection"
+                            titleUppercase="false"
+                        >
+                            <form:SimpleForm
+                                id="general-information-form"
+                                layout="ColumnLayout"
+                                columnsM="2"
+                                columnsL="3"
+                                columnsXL="4"
+                            >
+                                <form:content>
+                                    <m:Label
+                                        id="companyName-label"
+                                        text="Company Name"
+                                    />
+                                    <m:Text
+                                        id="companyName-text"
+                                        text="{context>/Name}"
+                                    />
+                                    <m:Label
+                                        id="contactPerson-label"
+                                        text="Contact Person"
+                                    />
+                                    <m:Text
+                                        id="contactPerson-text"
+                                        text="{context>/contactPerson}"
+                                    />
+                                    <m:Label
+                                        id="contactNumber-label"
+                                        text="Contact Number"
+                                    />
+                                    <m:Text
+                                        id="contactNumber-text"
+                                        text="{context>/contactNumber}"
+                                    />
+                                    <m:Label
+                                        id="email-label"
+                                        text="Email"
+                                    />
+                                    <m:Text
+                                        id="email-text"
+                                        text="{context>/email}"
+                                    />
+                                    <m:Label
+                                        id="van-label"
+                                        text="VAN"
+                                    />
+                                    <m:Text
+                                        id="van-text"
+                                        text="{context>/VAN}"
+                                    />
+                                    <m:Label
+                                        id="address-label"
+                                        text="Address"
+                                    />
+                                    <m:Text
+                                        id="address-text"
+                                        text="{context>/Address}"
+                                    />
+                                </form:content>
+                            </form:SimpleForm>
+                        </ObjectPageSubSection>
+                    </subSections>
+                </ObjectPageSection>
+                <!--  Vehicle Details Section  -->
+                <ObjectPageSection
+                    id="vehicleDetailsSection"
+                    title="Vehicle Details"
+                    titleUppercase="false"
+                >
+                    <subSections>
+                        <ObjectPageSubSection
+                            id="vehicleDetailsSubSection"
+                            titleUppercase="false"
+                        >
+                            <!-- Horizontal Scroll Container for Vehicle Details -->
+                            <m:ScrollContainer
+                                id="_IDGenScrollContainer1"
+                                height="100%"
+                                width="100%"
+                                horizontal="true"
+                                vertical="false"
+                            >
+                                <ui:Table
+                                    id="vehicle-details-table"
+                                    rows="{myModel>/Files}"
+                                    width="100%"
+                                    rowHeight="50%"
+                                    selectionMode="None"
+                                    visibleRowCount="2"
+                                >
+                                    <ui:columns>
+                                        <ui:Column
+                                            id="_IDGenColumn"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel"
+                                                text="Vehicle Code"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText1"
+                                                    text="{myModel>vehicleCode}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn1"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel1"
+                                                text="Vehicle Name"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText2"
+                                                    text="{myModel>vehicleName}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn2"
+                                            width="100px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel2"
+                                                text="Quantity"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText3"
+                                                    text="{myModel>quantity}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn3"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel3"
+                                                text="Vehicle Color"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText4"
+                                                    text="{myModel>vehicleColor}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn4"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel4"
+                                                text="Band"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText5"
+                                                    text="{myModel>band}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn5"
+                                            width="100px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel5"
+                                                text="Price Per Unit"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText6"
+                                                    text="{myModel>pricePerUnit}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn6"
+                                            width="100px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel6"
+                                                text="Tax (%)"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText7"
+                                                    text="{myModel>tax}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn7"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel7"
+                                                text="Discount (%)"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText8"
+                                                    text="{myModel>discount}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn8"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel8"
+                                                text="Discounted Price"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText9"
+                                                    text="{myModel>discountedPrice}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn9"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel9"
+                                                text="Total Price"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText10"
+                                                    text="{myModel>totalPrice}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                    </ui:columns>
+                                </ui:Table>
+                            </m:ScrollContainer>
+                        </ObjectPageSubSection>
+                    </subSections>
+                </ObjectPageSection>
+
+                <ObjectPageSection
+                    id="deliveryDetailsSection"
+                    title="Delivery Details"
+                    titleUppercase="false"
+                >
+                    <subSections>
+                        <ObjectPageSubSection
+                            id="deliveryDetailsSubSection"
+                            titleUppercase="false"
+                        >
+                            <!-- Horizontal Scroll Container for Delivery Details -->
+                            <m:ScrollContainer
+                                id="_IDGenScrollContainer2"
+                                height="100%"
+                                width="100%"
+                                horizontal="true"
+                                vertical="true"
+                                focusable="true"
+                            >
+                                <ui:Table
+                                    id="delivery-details-table"
+                                    rows="{myModel>/Files}"
+                                    width="100%"
+                                    rowHeight="50%"
+                                    selectionMode="None"
+                                    visibleRowCount="2"
+                                >
+                                    <ui:columns>
+                                        <ui:Column
+                                            id="_IDGenColumn17"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel17"
+                                                text="Vehicle Code"
+                                            />
+                                            <ui:template>
+                                                <m:Text
+                                                    id="_IDGenText17"
+                                                    text="{myModel>vehicleCode}"
+                                                    textAlign="Center"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn10"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel10"
+                                                text="Delivery Lead Time"
+                                            />
+                                            <ui:template>
+                                                <m:Input
+                                                    id="_IDGenInput1"
+                                                    value="{myModel>deliveryLeadTime}"
+                                                    textAlign="Center"
+                                                    width="100%"
+                                                    
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn11"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel11"
+                                                text="Delivery Date"
+                                            />
+                                            <ui:template>
+                                                <m:DatePicker
+                                                    id="_IDGenDatePicker"
+                                                    value="{myModel>deliveryDate}"
+                                                    textAlign="Center"
+                                                    width="100%"
+                                                    
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn12"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel12"
+                                                text="Shipping Method"
+                                            />
+                                            <ui:template>
+                                                <m:Input
+                                                    id="_IDGenInput2"
+                                                    value="{myModel>shippingMethod}"
+                                                    textAlign="Center"
+                                                    width="100%"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn13"
+                                            width="150px"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel13"
+                                                text="Shipping Charges"
+                                            />
+                                            <ui:template>
+                                                <m:Input
+                                                    id="_IDGenInput3"
+                                                    value="{myModel>shippingCharges}"
+                                                    textAlign="Center"
+                                                    width="100%"
+                                                    
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                    </ui:columns>
+                                </ui:Table>
+                            </m:ScrollContainer>
+                        </ObjectPageSubSection>
+                    </subSections>
+                </ObjectPageSection>
+
+                <!--  Payment Details Section  -->
+                <ObjectPageSection
+                    id="paymentDetailsSection"
+                    title="Payment Details"
+                    titleUppercase="false"
+                >
+                    <subSections>
+                        <ObjectPageSubSection
+                            id="paymentDetailsSubSection"
+                            titleUppercase="false"
+                        >
+                            <form:SimpleForm
+                                id="payment-details-form"
+                                layout="ColumnLayout"
+                                columnsM="2"
+                                columnsL="3"
+                                columnsXL="4"
+                            >
+                                <form:content>
+                                    <m:Label
+                                        id="bankName-label"
+                                        text="Bank Name"
+                                    />
+                                    <m:Input
+                                        id="bankName-input"
+                                        value="{context>/bankName}"
+                                       
+                                    />
+                                    <m:Label
+                                        id="accNumber-label"
+                                        text="Account Number"
+                                    />
+                                    <m:Input
+                                        id="accNumber-input"
+                                        value="{context>/accNumber}"
+                                       
+                                    />
+                                    <m:Label
+                                        id="ifscCode-label"
+                                        text="IFSC Code"
+                                    />
+                                    <m:Input
+                                        id="ifscCode-input"
+                                        value="{context>/ifscCode}"
+                                       
+                                    />
+                                    <m:Label
+                                        id="branch-label"
+                                        text="Branch"
+                                    />
+                                    <m:Input
+                                        id="branch-input"
+                                        value="{context>/branch}"
+                                        
+                                    />
+                                    <m:Label
+                                        id="accHoldersName-label"
+                                        text="Account Holder's Name"
+                                    />
+                                    <m:Input
+                                        id="accHoldersName-input"
+                                        value="{context>/accHoldersName}"
+                                       
+                                    />
+                                    <m:Label
+                                        id="dueDate-label"
+                                        text="Due Date"
+                                    />
+                                    <m:Input
+                                        id="dueDate-input"
+                                        value="{context>/dueDate}"
+                                       
+                                    />
+                                </form:content>
+                            </form:SimpleForm>
+                        </ObjectPageSubSection>
+                    </subSections>
+                </ObjectPageSection>
+
+                <!--  Attachments Section -->
+                <ObjectPageSection
+                    id="attachmentsSection1"
+                    title="Attachments"
+                    titleUppercase="false"
+                >
+                    <subSections>
+                        <ObjectPageSubSection
+                            id="attachmentsSubSection1"
+                            title="Attachments"
+                            titleUppercase="false"
+                        >
+                            <upload:UploadSet
+                                id="uploadSet1"
+                                uploadEnabled="false"
+                                items="{myFile>/pdf}"
+                            >
+                                <upload:items>
+                                    <upload:UploadSetItem
+                                        id="uploadSetItem1"
+                                        fileName="{myFile>fileName}"
+                                        mediaType="{myFile>mediaType}"
+                                        url="{myFile>url}"
+                                        enabledEdit="false"
+                                        enabledRemove="false"
+                                        visibleEdit="false"
+                                        visibleRemove="false"
+                                        openPressed="onOpenPressed"
+                                    >
+                                        <upload:attributes>
+                                            <m:ObjectAttribute
+                                                id="uploadedBy-attribute1"
+                                                title="Uploaded By"
+                                                text="{myFile>createdBy}"
+                                            />
+                                            <m:ObjectAttribute
+                                                id="uploadedOn-attribute1"
+                                                title="Uploaded on"
+                                                text="{myFile>createdAt}"
+                                            />
+                                            <m:ObjectAttribute
+                                                id="fileSize-attribute1"
+                                                title="File Size"
+                                                text="{myFile>size}"
+                                            />
+                                        </upload:attributes>
+                                    </upload:UploadSetItem>
+                                </upload:items>
+                            </upload:UploadSet>
+                        </ObjectPageSubSection>
+                    </subSections>
+                </ObjectPageSection>
+                <!--  FlexBox for Acknowledgement and Comments  -->
+                <ObjectPageSection
+                    id="commentSection"
+                    titleUppercase="false"
+                >
+                    <subSections>
+                        <ObjectPageSubSection
+                            id="_IDGenObjectPageSubSection5"
+                            titleUppercase="false"
+                        >
+                            <m:VBox
+                                id="_IDGenVBox2"
+                                width="100%"
+                            >
+                                <m:Toolbar id="_IDGenToolbar">
+                                    <m:Title
+                                        id="_IDGenTitle1"
+                                        text="Comment"
+                                    />
+                                    <m:ToolbarSpacer
+                                        id="_IDGenToolbarSpacer1"
+                                    />
+                                    <m:Button
+                                        id="_IDGenButton1"
+                                        text="Browse History"
+                                        press="onBrowseHistoryPress"
+                                    />
+                                </m:Toolbar>
+                                <m:TextArea
+                                    id="_IDGenTextArea"
+                                    showExceededText="true"
+                                    maxLength="1000"
+                                    width="100%"
+                                    height="120px"
+                                    value="{commentModel>/Comment}"
+                                    change="_PostComment"
+                                />
+                            </m:VBox>
+                        </ObjectPageSubSection>
+                    </subSections>
+                </ObjectPageSection>
+            </sections>
+        </ObjectPageLayout>
+    </m:App>
+    <m:Dialog
+        id="commentHistoryDialog"
+        title="Comment History"
+        stretch="false"
+        contentWidth="50%"
+        contentHeight="400px"
+    >
+        <m:customHeader>
+            <m:Toolbar id="_IDGenToolbar1">
+                <m:Title
+                    id="_IDGenTitle"
+                    text="Comment History"
+                />
+                <m:ToolbarSpacer id="_IDGenToolbarSpacer" />
+                <m:Button
+                    id="_IDGenButton"
+                    text="Close"
+                    press="onCloseHistoryDialog"
+                />
+            </m:Toolbar>
+        </m:customHeader>
+        <m:VBox id="_IDGenVBox">
+            <!--  Toolbar with filters  -->
+            <!-- <m:OverflowToolbar id="_IDGenOverflowToolbar">
+                <m:Label
+                    id="_IDGenLabel15"
+                    text="Filter by Type"
+                />
+                <m:Select
+                    id="filterByTypeSelect"
+                    change="onFilterTypeChange"
+                >
+                    <core:Item
+                        id="_IDGenItem"
+                        key="None"
+                        text="None"
+                    />
+                    <core:Item
+                        id="_IDGenItem1"
+                        key="Day"
+                        text="Day"
+                    />
+                    <core:Item
+                        id="_IDGenItem2"
+                        key="Month"
+                        text="Month"
+                    />
+                </m:Select>
+            </m:OverflowToolbar> -->
+            <!--  Timeline for Comment History  -->
+            <suite:Timeline
+                id="_IDGenTimeline"
+                enableDoubleSided="true"
+                groupBy="Day"
+                sortOldestFirst="true"
+                content="{myComments>/Comments}"
+                showSearch="false"
+                showSort="false"
+                showHeaderBar="false"
+            >
+                <suite:content>
+                    <suite:TimelineItem
+                        id="_IDGenTimelineItem"
+                        dateTime="{myComments>createdAt}"
+                        title="{myComments>createdBy}"
+                        text="{myComments>commentsText}"
+                    />
+                </suite:content>
+            </suite:Timeline>
+        </m:VBox>
+    </m:Dialog>
+</mvc:View>

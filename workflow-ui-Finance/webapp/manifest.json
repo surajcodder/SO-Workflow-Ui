@@ -1,0 +1,253 @@
+{
+    "_version": "1.26.0",
+    "sap.app": {
+        "id": "FinanceWorkflow.workflowuiFinance",
+        "type": "application",
+        "i18n": "i18n/i18n.properties",
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{appTitle}}",
+        "description": "{{appDescription}}",
+        "resources": "resources.json",
+        "sourceTemplate": {
+            "id": "@sap/generator-fiori:basic",
+            "version": "1.8.4",
+            "toolsId": "d44e5 84d-d2c8-42a6-bee9-b2bfdb8bbcf2"
+        },
+        "dataSources": {
+            "mainService": {
+                "uri": "/sap/opu/odata/",
+                "type": "OData",
+                "settings": {
+                    "annotations": [],
+                    "localUri": "localService/metadata.xml",
+                    "odataVersion": "2.0"
+                }
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": true,
+        "dependencies": {
+            "minUI5Version": "1.82.2",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.f": {},
+                "sap.suite.ui.generic.template": {},
+                "sap.ui.comp": {},
+                "sap.ui.generic.app": {},
+                "sap.ui.table": {},
+                "sap.ushell": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "FinanceWorkflow.workflowuiFinance.i18n.i18n"
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "preload": true,
+                "settings": {}
+            }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "async": true,
+                "viewPath": "FinanceWorkflow.workflowuiFinance.view",
+                "controlAggregation": "pages",
+                "controlId": "app",
+                "clearControlAggregation": false
+            },
+            "routes": [
+                {
+                    "name": "RouteMyTaskUI",
+                    "pattern": ":?query:",
+                    "target": [
+                        "TargetMyTaskUI"
+                    ]
+                }
+            ],
+            "targets": {
+                "TargetMyTaskUI": {
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false,
+                    "viewId": "MyTaskUI",
+                    "viewName": "MyTaskUI"
+                }
+            }
+        },
+        "rootView": {
+            "viewName": "FinanceWorkflow.workflowuiFinance.view.App",
+            "type": "XML",
+            "async": true,
+            "id": "App"
+        }
+    },
+    "sap.cloud": {
+        "public": true,
+        "service": "FinanceWorkflow"
+    },
+    "sap.bpa.task": {
+        "_version": "1.0.0",
+        "outcomes": [
+            {
+                "id": "approve",
+                "label": "Approve"
+            },
+            {
+                "id": "reject",
+                "label": "Reject"
+            }
+        ],
+       "inputs":{
+        "$schema": "http://json-schema.org/draft-07/schema",
+        "title": "input",
+        "type": "object",
+        "required": [
+          "CustomerID",
+          "Name",
+          "Address",
+          "link",
+          "companyName",
+          "contactPerson",
+          "contactNumber",
+          "email",
+          "VAN",
+          "address",
+          "bankName",
+          "accNumber",
+          "ifscCode",
+          "branch",
+          "accHoldersName",
+          "dueDate",
+          "commentLink"
+        ],
+        "properties": {
+          "CustomerID": {
+            "type": "string",
+            "title": "Customer ID",
+            "description": "Unique identifier for the customer"
+          },
+          "Name": {
+            "type": "string",
+            "title": "Customer Name",
+            "description": "Name of the customer"
+          },
+          "Address": {
+            "type": "string",
+            "title": "Customer Address",
+            "description": "Address of the customer"
+          },
+          "link": {
+            "type": "string",
+            "title": "Link",
+            "description": "Link to relevant information"
+          },
+          "companyName": {
+            "type": "string",
+            "title": "Company Name",
+            "description": "Name of the Company"
+          },
+          "contactPerson": {
+            "type": "string",
+            "title": "Contact Person",
+            "description": "Name of the Contact Person"
+          },
+          "contactNumber": {
+            "type": "string",
+            "title": "Contact Number",
+            "description": "Phone number of the Contact Person"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email",
+            "description": "Email of the Contact Person"
+          },
+          "VAN": {
+            "type": "string",
+            "title": "VAN",
+            "description": "Vendor Account Number"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address",
+            "description": "Address of the Company"
+          },
+          "bankName": {
+            "type": "string",
+            "title": "Bank Name",
+            "description": "Name of the Bank"
+          },
+          "accNumber": {
+            "type": "string",
+            "title": "Account Number",
+            "description": "Bank Account Number"
+          },
+          "ifscCode": {
+            "type": "string",
+            "title": "IFSC Code",
+            "description": "Bank's IFSC Code"
+          },
+          "branch": {
+            "type": "string",
+            "title": "Branch",
+            "description": "Bank Branch"
+          },
+          "accHoldersName": {
+            "type": "string",
+            "title": "Account Holder's Name",
+            "description": "Name of the Account Holder"
+          },
+          "dueDate": {
+            "type": "string",
+            "format": "date",
+            "title": "Due Date",
+            "description": "Due Date for the Payment"
+          },
+          "commentLink": {
+            "type": "string",
+            "title": "Comment Link",
+            "description": "Link to additional comments or information"
+          }
+        }
+      },      
+    
+        "outputs": {},
+        "category": "approval"
+    }
+}
