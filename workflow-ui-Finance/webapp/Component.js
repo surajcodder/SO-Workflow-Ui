@@ -21,6 +21,10 @@ sap.ui.define(
          */
         init: function () {
 
+          var startupParameters = this.getComponentData().startupParameters;
+          var taskModel = startupParameters.taskModel;
+          var taskId = taskModel.getData().InstanceID;
+          console.log(taskId);
           // call the base component's init function
           UIComponent.prototype.init.apply(this, arguments);
 
@@ -34,7 +38,7 @@ sap.ui.define(
 
           const rejectOutcomeId = "reject";
           // this.getInboxAPI().addAction(
-          //     {
+          //     {    
           //     action: rejectOutcomeId,
           //     label: "Reject",
           //     type: "reject",
@@ -52,27 +56,122 @@ sap.ui.define(
               type: "accept",
             },
             function () {
-              this.completeTask(true, approveOutcomeId);
-              debugger;
-
+              debugger
+              this.getTaskInstanceID();
+              var ProcessId = this.getComponentData().startupParameters.taskModel.InstanceID;
+              console.log("process Id:-", ProcessId);
               var oRootControl = this.getRootControl();
-
-              // ----- Part 1: Post Comment -----
               var oTextArea = oRootControl.byId("_IDGenTextArea");
+
+              // Initialize the flag to control whether to proceed
+              let canProceed = true;
+
+              // Validate comment field
               if (oTextArea) {
                 var sCommentText = oTextArea.getValue();
+                if (!sCommentText.trim()) {
+                  sap.m.MessageToast.show("Comment is required to proceed.");
+                  oTextArea.setValueState(sap.ui.core.ValueState.Error);
+                  canProceed = false;
+                } else {
+                  oTextArea.setValueState(sap.ui.core.ValueState.None);
+                }
+              }
+
+              // Validate payment details fields
+              const requiredFields = [
+                { id: "bankName-input", name: "Bank Name" },
+                { id: "accNumber-input", name: "Account Number" },
+                { id: "ifscCode-input", name: "IFSC Code" },
+                { id: "branch-input", name: "Branch" },
+                { id: "accHoldersName-input", name: "Account Holder's Name" },
+                { id: "dueDate-input", name: "Due Date" }
+              ];
+
+              requiredFields.forEach(field => {
+                var oField = oRootControl.byId(field.id);
+                if (oField) {
+                  var fieldValue = oField.getValue();
+                  if (!fieldValue.trim()) {
+                    sap.m.MessageToast.show(`${field.name} is required to proceed.`);
+                    oField.setValueState(sap.ui.core.ValueState.Error);
+                    canProceed = false;
+                  } else {
+                    oField.setValueState(sap.ui.core.ValueState.None);
+                  }
+                }
+              });
+
+              // Validate delivery details fields and update them one by one
+              var oTable = oRootControl.byId("delivery-details-table");
+              if (oTable) {
+                var oModel = oTable.getModel("myModel");
                 var oData = oRootControl.getModel("context").getData();
                 var baseUrl = JSON.parse(oData.link);
-                var soID = baseUrl[0].soID;
-                var baseUrlComments = "https://5b8242e5trial-dev-04-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
-                var commentUrl = "Comment";
+                var purchaseOrderId = baseUrl[0].purchaseOrderUuid.replace(/['"]/g, '');
+                var sPath = "/Files";
+                var oDeliveryData = oModel.getProperty(sPath);
+
+                oDeliveryData.forEach(function (oDeliveryRow, index) {
+                  var rowPath = sPath + "/" + index;
+                  var isRowValid = true;
+
+                  if (!oDeliveryRow.vehicleID) {
+                    sap.m.MessageToast.show(`Vehicle ID is required for row ${index + 1}.`);
+                    isRowValid = false;
+                  }
+                  if (!oDeliveryRow.deliveryDate) {
+                    sap.m.MessageToast.show(`Delivery Date is required for row ${index + 1}.`);
+                    isRowValid = false;
+                  }
+                  if (oDeliveryRow.shippingCharges === undefined || oDeliveryRow.shippingCharges === null || oDeliveryRow.shippingCharges.trim() === "") {
+                    sap.m.MessageToast.show(`Shipping Charges are required for row ${index + 1}.`);
+                    isRowValid = false;
+                  }
+
+                  if (!isRowValid) {
+                    canProceed = false;
+                  } else {
+                    // Send individual AJAX request for each row
+                    const baseUrlDelivery = 'https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
+                    var deliveryUrl = `${baseUrlDelivery}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToVehicle(vehicleID=${oDeliveryRow.vehicleID},IsActiveEntity=true)`;
+
+                    $.ajax({
+                      url: deliveryUrl,
+                      method: "PATCH",
+                      contentType: "application/json",
+                      data: JSON.stringify({
+                        deliveryDate: oDeliveryRow.deliveryDate,
+                        shippingCharges: oDeliveryRow.shippingCharges
+                      }),
+                      success: function (oData) {
+                        console.log(`Delivery details updated for vehicle ID: ${oDeliveryRow.vehicleID}`, oData);
+                      },
+                      error: function (jqXHR, textStatus, errorThrown) {
+                        console.error(`Error updating delivery details for vehicle ID: ${oDeliveryRow.vehicleID}`, textStatus, errorThrown);
+                      }
+                    });
+                  }
+                });
+              }
+
+              // Proceed only if all validations are passed
+              if (canProceed) {
+                this.completeTask(true, approveOutcomeId);
+
+                // Post Comment
+                var oData = oRootControl.getModel("context").getData();
+                var baseUrl = JSON.parse(oData.link);
+                var purchaseOrderId = baseUrl[0].purchaseOrderUuid.replace(/['"]/g, '');
+                const baseUrlComments = 'https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
+                var url = `${baseUrlComments}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToComments`;
 
                 $.ajax({
-                  url: baseUrlComments + commentUrl,
+                  url: url,
                   method: "POST",
                   contentType: "application/json",
                   data: JSON.stringify({
-                    soID: soID,
+                    purchaseOrderUuid: purchaseOrderId,
                     commentsText: sCommentText,
                     IsActiveEntity: true,
                   }),
@@ -81,103 +180,62 @@ sap.ui.define(
                     var oCommentModel = oRootControl.getModel("commentModel");
                     if (!oCommentModel) {
                       oCommentModel = new sap.ui.model.json.JSONModel();
-                      oRootControl.setModel(oCommentModel, "commentModel");
+                      oRootControl.setModel(oCommentModel, "myComments");
                     }
-                    oCommentModel.setProperty("/Comment", sCommentText);
+                    oCommentModel.setProperty("/Comments", sCommentText);
                   },
                   error: function (jqXHR, textStatus, errorThrown) {
                     console.error("Error posting comment: " + textStatus + ' ' + errorThrown);
                   }
                 });
-              }
 
-              // ----- Part 2: Update Delivery Details -----
-              var oTable = oRootControl.byId("delivery-details-table");
-              if (oTable) {
-                var oModel = oTable.getModel("myModel");
-                var sPath = "/Files";
-                var oDeliveryData = oModel.getProperty(sPath);
-
-                oDeliveryData.forEach(function (oDeliveryRow) {
-                  var deliveryData = {
-                    vehicleID: oDeliveryRow.vehicleID,
-                    vehicleCode: oDeliveryRow.vehicleCode,
-                    deliveryLeadTime: oDeliveryRow.deliveryLeadTime,
-                    deliveryDate: oDeliveryRow.deliveryDate,
-                    shippingMethod: oDeliveryRow.shippingMethod,
-                    shippingCharges: oDeliveryRow.shippingCharges
-                  };
-
-                  var baseUrlDelivery = "https://5b8242e5trial-dev-04-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
-                  const deliveryUrl = `SalesVehicle(vehicleID=${oDeliveryRow.vehicleID})`;
-
-                  $.ajax({
-                    url: baseUrlDelivery + deliveryUrl,
-                    method: "PATCH",
-                    contentType: "application/json",
-                    data: JSON.stringify(deliveryData),
-                    success: function (oData) {
-                      console.log("Delivery Details Updated for vehicle ID:", oDeliveryRow.vehicleID, oData);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                      console.error("Error updating delivery details for vehicle ID " + oDeliveryRow.vehicleID + ": " + textStatus + ' ' + errorThrown);
+                // Update Form Data
+                var oForm = oRootControl.byId("payment-details-form");
+                if (oForm) {
+                  var oFormData = {};
+                  var aFormContent = oForm.getContent();
+                  aFormContent.forEach(function (oControl) {
+                    if (oControl instanceof sap.m.Input) {
+                      var sControlId = oControl.getId();
+                      switch (sControlId) {
+                        case oRootControl.byId("bankName-input").getId():
+                          oFormData.bankName = oControl.getValue();
+                          break;
+                        case oRootControl.byId("accNumber-input").getId():
+                          oFormData.accNumber = oControl.getValue();
+                          break;
+                        case oRootControl.byId("ifscCode-input").getId():
+                          oFormData.ifscCode = oControl.getValue();
+                          break;
+                        case oRootControl.byId("branch-input").getId():
+                          oFormData.branch = oControl.getValue();
+                          break;
+                        case oRootControl.byId("accHoldersName-input").getId():
+                          oFormData.accHoldersName = oControl.getValue();
+                          break;
+                        case oRootControl.byId("dueDate-input").getId():
+                          oFormData.dueDate = oControl.getValue();
+                          break;
+                      }
                     }
                   });
-                });
-              }
 
-              // ----- Part 3: Live Update of Form Data -----
-              var oForm = oRootControl.byId("payment-details-form");
-              if (oForm) {
-                var oFormData = {};
-                var aFormContent = oForm.getContent();
+                  const baseUrlForm = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
+                  var formUrl = `PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)`;
 
-                aFormContent.forEach(function (oControl) {
-                  if (oControl instanceof sap.m.Input) {
-                    var sControlId = oControl.getId();
-
-                    switch (sControlId) {
-                      case oRootControl.byId("bankName-input").getId():
-                        oFormData.bankName = oControl.getValue();
-                        break;
-                      case oRootControl.byId("accNumber-input").getId():
-                        oFormData.accNumber = oControl.getValue();
-                        break;
-                      case oRootControl.byId("ifscCode-input").getId():
-                        oFormData.ifscCode = oControl.getValue();
-                        break;
-                      case oRootControl.byId("branch-input").getId():
-                        oFormData.branch = oControl.getValue();
-                        break;
-                      case oRootControl.byId("accHoldersName-input").getId():
-                        oFormData.accHoldersName = oControl.getValue();
-                        break;
-                      case oRootControl.byId("dueDate-input").getId():
-                        oFormData.dueDate = oControl.getValue();
-                        break;
+                  $.ajax({
+                    url: baseUrlForm + formUrl,
+                    method: "PATCH",
+                    contentType: "application/json",
+                    data: JSON.stringify(oFormData),
+                    success: function (oData) {
+                      console.log("Form Data Updated:", oData);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                      console.error("Error updating form data: " + textStatus + ' ' + errorThrown);
                     }
-                  }
-                });
-
-                // Log form data to ensure it's gathered correctly
-                console.log("Form Data:", oFormData);
-
-                // Perform an AJAX call to send form data to the backend
-                var baseUrlForm = "https://5b8242e5trial-dev-04-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
-                var formUrl = `SalesOrder(soID='${soID}',IsActiveEntity=true)`; 
-
-                $.ajax({
-                  url: baseUrlForm + formUrl,
-                  method: "PATCH",
-                  contentType: "application/json",
-                  data: JSON.stringify(oFormData),
-                  success: function (oData) {
-                    console.log("Form Data Updated:", oData);
-                  },
-                  error: function (jqXHR, textStatus, errorThrown) {
-                    console.error("Error updating form data: " + textStatus + ' ' + errorThrown);
-                  }
-                });
+                  });
+                }
               }
             },
             this
@@ -213,6 +271,7 @@ sap.ui.define(
         },
 
         getTaskInstanceID: function () {
+          console.log(this.getModel("task").getData().InstanceID);
           return this.getModel("task").getData().InstanceID;
         },
 

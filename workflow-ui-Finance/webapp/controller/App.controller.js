@@ -6,6 +6,12 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
     {
       onInit: function () {
         debugger
+        // Static order date as the minimum date allowed
+        // var orderDate = new Date("2024-09-01"); // Minimum selectable date
+        // this.initializeDatePickerMinDate();
+        // this.initializeDatePickerMinDateForDueDate();
+        
+
       },
       // Handle scrolling behavior
       onScroll: function (oEvent) {
@@ -88,6 +94,16 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
             oModel.setData({ Files: baseUrl });
             oView.setModel(oModel, "myModel");
             var aData = oModel.getData("Files"); // Get the data array from your model
+            if (Array.isArray(aData)) {
+              aData.forEach(function (item, index) {
+                var deliveryLeadTime = item.deliveryLeadTime;
+                oModel.setData({ Files: baseUrl });
+                oView.setModel(oModel, "myModel");
+                console.log("Delivery Lead Time for item " + index + ": " + deliveryLeadTime);
+              });
+            } else {
+              console.error("Data is not in the expected array format.");
+            }
             // var iRowCount = aData ? aData.length : 0; // Determine the row count based on the data length
 
             // var oVehicleTable = this.byId("vehicle-details-table");
@@ -104,16 +120,22 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
           1000
         );
 
+
         // New AJAX call to fetch comment history data
         setTimeout(
           function () {
+            //debugger
             var oView1 = this.getView();
-            var baseUrl1 =
-              "https://5b8242e5trial-dev-04-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/Comment";
+            var oData = oView1.oPropagatedProperties.oModels.context.oData;
+            var baseUrl = JSON.parse(oData.link);
+            var purchaseOrderId = baseUrl[0].purchaseOrderUuid.replace(/['"]/g, '');
+            // Perform POST request to submit the comment
+            var baseUrlComments = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
+            const curl = baseUrlComments + `PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToComments`;
 
             // Perform AJAX request to retrieve comment data
             $.ajax({
-              url: baseUrl1,
+              url: curl,
               method: "GET",
               success: function (oData) {
                 console.log(oData);
@@ -133,6 +155,27 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
           }.bind(this),
           1000
         );
+
+
+        // setTimeout(
+        //   function () {
+        //     debugger;
+        //     // Access oData to get POReleaseDate before rendering
+        //     var oView = this.getView();
+        //     var oData = oView.oPropagatedProperties.oModels.context?.oData; // Access oData safely
+
+        //     if (oData && oData.POReleaseDate) {
+        //       this.poReleaseDate = new Date(oData.POReleaseDate); // Store POReleaseDate in controller instance for later use
+        //     } else {
+        //       console.warn("POReleaseDate not available during onBeforeRendering");
+        //     }
+        //   }.bind(this),
+        //   1000
+        // );
+
+
+
+
         setTimeout(
           function () {
             var oView = this.getView();
@@ -161,7 +204,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
       },
       onOpenPressed: function (oEvent) {
         debugger
-        var baseUrl = "https://dde7cfc6trial-dev-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
+        var baseUrl = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
         debugger
         let fileurl = oEvent.getSource().getUrl();
         var pattern = /Files.*$/;
@@ -172,6 +215,49 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
         oEvent.getSource().setUrl(entityUrl);
         debugger
       },
+
+      // Event handler for the delivery date change
+      onDataChange: function () {
+        debugger;
+        var oView = this.getView();
+
+        // Get POReleaseDate dynamically from the model data
+        var oData = oView.oPropagatedProperties.oModels.context.oData;
+        var poReleaseDate = new Date(oData.POReleaseDate); // Use POReleaseDate as the order date
+
+        var oTable = oView.byId("delivery-details-table");
+
+        if (oTable) {
+          var oModel = oTable.getModel("myModel");
+          var sPath = "/Files"; // Path to the delivery data in the model
+          var oDeliveryData = oModel.getProperty(sPath);
+
+          // Loop through each delivery entry
+          oDeliveryData.forEach(function (oDeliveryRow, index) {
+            // Fetch the delivery date from the data
+            var deliveryDateString = oDeliveryRow.deliveryDate;
+            var deliveryDate = deliveryDateString ? new Date(deliveryDateString) : null;
+
+            if (deliveryDate && !isNaN(deliveryDate.getTime())) {
+              // Calculate the difference in days between delivery date and POReleaseDate
+              var timeDiff = Math.abs(deliveryDate.getTime() - poReleaseDate.getTime());
+              var deliveryLeadTime = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Lead time in days
+
+              // Create a formatted lead time with ' days' suffix for model update
+              var formattedLeadTime = deliveryLeadTime + " days";
+
+              // Update the deliveryLeadTime in the model immediately with formatted value
+              var rowPath = sPath + "/" + index + "/deliveryLeadTime";
+              oModel.setProperty(rowPath, formattedLeadTime); // Update the model with formatted lead time
+              console.log("Updated delivery lead time for vehicle ID:", oDeliveryRow.vehicleID, "Lead Time:", formattedLeadTime);
+            } else {
+              console.error("Invalid or missing delivery date for vehicle ID: " + oDeliveryRow.vehicleID);
+            }
+          });
+        }
+      },
+
+
 
       onAfterRendering: function () {
         // Call the function to check the ID and update attributes
@@ -184,11 +270,62 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
         // Find all divs with specific attributes
         jQuery("div[data-value]").each(function () {
           let value = parseFloat(jQuery(this).data("value")) || 0; // Safely parse the value
-          total += value; // Aggregate the value
+          total += value; // \ the value
         });
 
         console.log("Aggregate function executed. Total sum of div values:", total);
         // You can do something with the total, like updating a model or UI element
+
+
+        // var oView = this.getView();
+        // var oDatePicker = oView.byId("_IDGenDatePicker");
+
+        // // Check if we have a valid POReleaseDate and DatePicker control
+        // if (oDatePicker && this.poReleaseDate) {
+        //   // Set the minimum date constraint using the POReleaseDate stored from onBeforeRendering
+        //   oDatePicker.setMinDate(this.poReleaseDate);
+        //   console.log("Minimum date set on DatePicker to:", this.poReleaseDate);
+        // } else {
+        //   console.warn("DatePicker or POReleaseDate not available during onAfterRendering");
+        // }
+      },
+      initializeDatePickerMinDate: function () {
+        setTimeout(function () {
+          var oView = this.getView();
+
+          // Get the current date
+          var currentDate = new Date();
+          currentDate.setHours(0, 0, 0, 0); // Set the time to midnight to avoid time issues
+          console.log("Current Date:", currentDate);
+
+          // Access the DatePicker control and set the minimum date to today
+          var oDatePicker = oView.byId("_IDGenDatePicker");
+          if (oDatePicker) {
+            oDatePicker.setMinDate(currentDate);
+            console.log("Minimum date set on DatePicker to:", currentDate);
+          } else {
+            console.warn("DatePicker control not found");
+          }
+        }.bind(this), 500); // Delay execution by 500ms
+      },
+
+      initializeDatePickerMinDateForDueDate: function () {
+        setTimeout(function () {
+          var oView = this.getView();
+          // Get the current date
+          var currentDate = new Date();
+          currentDate.setHours(0, 0, 0, 0); // Set the time to midnight to avoid time issues
+          console.log("Current Date:", currentDate);
+
+          // Access the DatePicker control and set the minimum date to today
+          var oDatePicker = oView.byId("dueDate-input");
+          if (oDatePicker) {
+            oDatePicker.setMinDate(currentDate);
+            console.log("Minimum date set on DatePicker to:", currentDate);
+          } else {
+            console.warn("DatePicker control not found");
+          }
+        }.bind(this), 500); // Delay execution by 500ms
       },
 
       checkAndUpdateDiv: function () {

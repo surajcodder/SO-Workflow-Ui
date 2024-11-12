@@ -155,7 +155,16 @@
           "branch",
           "accHoldersName",
           "dueDate",
-          "commentLink"
+          "commentLink",
+          "QuotationID",
+          "Status",
+          "POid",
+          "SOID",
+          "TotalPrice",
+          "TaxAmount",
+          "GrandTotal",
+          "POReleaseDate",
+          "ProfileIcon"
         ],
         "properties": {
           "CustomerID": {
@@ -243,6 +252,51 @@
             "type": "string",
             "title": "Comment Link",
             "description": "Link to additional comments or information"
+          },
+          "QuotationID": {
+            "type": "string",
+            "title": "Quotation ID",
+            "description": "ID of the Quotation"
+          },
+          "Status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Current status of the quotation or sales order"
+          },
+          "POid": {
+            "type": "string",
+            "title": "PO ID",
+            "description": "ID related to PO"
+          },
+          "SOID": {
+            "type": "string",
+            "title": "Sales Order ID",
+            "description": "Unique identifier for the sales order"
+          },
+          "TotalPrice": {
+            "type": "string",
+            "title": "Total Price",
+            "description": "Total price of the order"
+          },
+          "TaxAmount": {
+            "type": "string",
+            "title": "Tax Amount",
+            "description": "Amount of tax applied to the order"
+          },
+          "GrandTotal": {
+            "type": "string",
+            "title": "Grand Total",
+            "description": "Total amount payable including tax"
+          },
+          "POReleaseDate": {
+            "type": "string",
+            "title": "Purchase Order Release Date",
+            "description": "Order Date Of Vehicle"
+          },
+          "ProfileIcon": {
+            "type": "string",
+            "title": "Icon Link",
+            "description": "Icon Link"
           }
         }
       },      
