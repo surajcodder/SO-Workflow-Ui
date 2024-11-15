@@ -20,11 +20,6 @@ sap.ui.define(
          * @override
          */
         init: function () {
-
-          var startupParameters = this.getComponentData().startupParameters;
-          var taskModel = startupParameters.taskModel;
-          var taskId = taskModel.getData().InstanceID;
-          console.log(taskId);
           // call the base component's init function
           UIComponent.prototype.init.apply(this, arguments);
 
@@ -57,18 +52,16 @@ sap.ui.define(
             },
             function () {
               debugger
-              this.getTaskInstanceID();
-              var ProcessId = this.getComponentData().startupParameters.taskModel.InstanceID;
-              console.log("process Id:-", ProcessId);
+              // console.log("process Id:-", ProcessId);
               var oRootControl = this.getRootControl();
               var oTextArea = oRootControl.byId("_IDGenTextArea");
 
               // Initialize the flag to control whether to proceed
               let canProceed = true;
-
               // Validate comment field
               if (oTextArea) {
                 var sCommentText = oTextArea.getValue();
+                console.log(sCommentText);
                 if (!sCommentText.trim()) {
                   sap.m.MessageToast.show("Comment is required to proceed.");
                   oTextArea.setValueState(sap.ui.core.ValueState.Error);
@@ -135,20 +128,47 @@ sap.ui.define(
                     // Send individual AJAX request for each row
                     const baseUrlDelivery = 'https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
                     var deliveryUrl = `${baseUrlDelivery}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToVehicle(vehicleID=${oDeliveryRow.vehicleID},IsActiveEntity=true)`;
-
-                    $.ajax({
-                      url: deliveryUrl,
-                      method: "PATCH",
-                      contentType: "application/json",
-                      data: JSON.stringify({
-                        deliveryDate: oDeliveryRow.deliveryDate,
-                        shippingCharges: oDeliveryRow.shippingCharges
-                      }),
-                      success: function (oData) {
-                        console.log(`Delivery details updated for vehicle ID: ${oDeliveryRow.vehicleID}`, oData);
-                      },
-                      error: function (jqXHR, textStatus, errorThrown) {
-                        console.error(`Error updating delivery details for vehicle ID: ${oDeliveryRow.vehicleID}`, textStatus, errorThrown);
+                    oDeliveryData.forEach(function (oDeliveryRow, index) {
+                      // Refresh each row's path to get the latest UI data in each iteration
+                      var rowPath = sPath + "/" + index;
+                      oDeliveryRow = oModel.getProperty(rowPath); // Refreshes data for each row
+                    
+                      var isRowValid = true;
+                      if (!oDeliveryRow.vehicleID) {
+                        sap.m.MessageToast.show(`Vehicle ID is required for row ${index + 1}.`);
+                        isRowValid = false;
+                      }
+                      if (!oDeliveryRow.deliveryDate) {
+                        sap.m.MessageToast.show(`Delivery Date is required for row ${index + 1}.`);
+                        isRowValid = false;
+                      }
+                      if (oDeliveryRow.shippingCharges === undefined || oDeliveryRow.shippingCharges === null || oDeliveryRow.shippingCharges.trim() === "") {
+                        sap.m.MessageToast.show(`Shipping Charges are required for row ${index + 1}.`);
+                        isRowValid = false;
+                      }
+                    
+                      if (!isRowValid) {
+                        canProceed = false;
+                      } else {
+                        const baseUrlDelivery = 'https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
+                        var deliveryUrl = `${baseUrlDelivery}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToVehicle(vehicleID=${oDeliveryRow.vehicleID},IsActiveEntity=true)`;
+                    
+                        $.ajax({
+                          url: deliveryUrl,
+                          method: "PATCH",
+                          contentType: "application/json",
+                          data: JSON.stringify({
+                            deliveryDate: oDeliveryRow.deliveryDate,
+                            shippingCharges: oDeliveryRow.shippingCharges,
+                            shippingMethod: oDeliveryRow.shippingMethod
+                          }),
+                          success: function (oData) {
+                            console.log(`Delivery details updated for vehicle ID: ${oDeliveryRow.vehicleID}`, oData);
+                          },
+                          error: function (jqXHR, textStatus, errorThrown) {
+                            console.error(`Error updating delivery details for vehicle ID: ${oDeliveryRow.vehicleID}`, textStatus, errorThrown);
+                          }
+                        });
                       }
                     });
                   }
@@ -313,6 +333,7 @@ sap.ui.define(
           jQuery.ajax({
             url: this._getWorkflowRuntimeBaseURL() + "/xsrf-token",
             method: "GET",
+            
             async: false,
             headers: {
               "X-CSRF-Token": "Fetch",

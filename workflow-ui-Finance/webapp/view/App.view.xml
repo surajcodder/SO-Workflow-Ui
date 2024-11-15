@@ -20,9 +20,6 @@
                 <ObjectPageHeader
                     id="headerForTest"
                     objectTitle="{context>/invoiceno}"
-                    objectImageURI="{context>/ProfileIcon}"
-                    objectImageAlt="Profile Picture"
-                    objectImageShape="Circle"
                 />
             </headerTitle>
             <!--  Object Page Sections  -->
@@ -185,6 +182,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn"
                                                 width="150px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel"
@@ -201,6 +199,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn1"
                                                 width="150px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel1"
@@ -217,6 +216,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn2"
                                                 width="100px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel2"
@@ -233,6 +233,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn3"
                                                 width="150px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel3"
@@ -249,6 +250,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn4"
                                                 width="150px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel4"
@@ -265,6 +267,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn5"
                                                 width="100px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel5"
@@ -281,6 +284,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn6"
                                                 width="100px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel6"
@@ -297,6 +301,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn7"
                                                 width="150px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel7"
@@ -313,6 +318,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn8"
                                                 width="150px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel8"
@@ -329,6 +335,7 @@
                                             <ui:Column
                                                 id="_IDGenColumn9"
                                                 width="150px"
+                                                hAlign="Center"
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel9"
@@ -475,6 +482,7 @@
                                                     textAlign="Center"
                                                     width="100%"
                                                     change="onDataChange"
+                                                    displayFormat="yyyy-MM-dd" 
                                                 />
                                             </ui:template>
                                         </ui:Column>
@@ -669,6 +677,7 @@
                 <!--  FlexBox for Acknowledgement and Comments  -->
                 <ObjectPageSection
                     id="commentSection"
+                    title="Comments *"
                     titleUppercase="false"
                 >
                     <subSections>
@@ -683,7 +692,6 @@
                                 <m:Toolbar id="_IDGenToolbar">
                                     <m:Title
                                         id="_IDGenTitle1"
-                                        text="Comment *"
                                     />
                                     <m:ToolbarSpacer
                                         id="_IDGenToolbarSpacer1"

@@ -140,6 +140,7 @@
         "type": "object",
         "required": [
           "CustomerID",
+          
           "Name",
           "Address",
           "link",
