@@ -49,6 +49,14 @@
                                     />
                                     <m:Text
                                         id="companyName-text"
+                                        text="{context>/companyName}"
+                                    />
+                                    <m:Label
+                                        id="Name-label"
+                                        text="Name"
+                                    />
+                                    <m:Text
+                                        id="Name-text"
                                         text="{context>/Name}"
                                     />
                                     <m:Label
@@ -77,7 +85,7 @@
                                     />
                                     <m:Label
                                         id="van-label"
-                                        text="VAN"
+                                        text="Virtual Account Number"
                                     />
                                     <m:Text
                                         id="van-text"
@@ -90,6 +98,94 @@
                                     <m:Text
                                         id="address-text"
                                         text="{context>/Address}"
+                                    />
+                                    <m:Label
+                                        id="JobTitle-label"
+                                        text="Job Title"
+                                    />
+                                    <m:Text
+                                        id="JobTitle-text"
+                                        text="{context>/jobTitle}"
+                                    />
+                                    <m:Label
+                                        id="Department-label"
+                                        text="Department"
+                                    />
+                                    <m:Text
+                                        id="Department-text"
+                                        text="{context>/Department}"
+                                    />
+                                    <m:Label
+                                        id="TaxId-label"
+                                        text="TaxId"
+                                    />
+                                    <m:Text
+                                        id="TaxId-text"
+                                        text="{context>/TaxId}"
+                                    />
+                                    <m:Label
+                                        id="City-label"
+                                        text="City"
+                                    />
+                                    <m:Text
+                                        id="city-text"
+                                        text="{context>/City}"
+                                    />
+                                    <m:Label
+                                        id="Country-label"
+                                        text="Country"
+                                    />
+                                    <m:Text
+                                        id="Country-text"
+                                        text="{context>/Country}"
+                                    />
+                                    <m:Label
+                                        id="Currency-label"
+                                        text="Currency"
+                                    />
+                                    <m:Text
+                                        id="Currency-text"
+                                        text="{context>/Currency}"
+                                    />
+                                    <m:Label
+                                        id="CustomerCode-label"
+                                        text="Customer Code"
+                                    />
+                                    <m:Text
+                                        id="CustomerCode-text"
+                                        text="{context>/CustomerCode}"
+                                    />
+                                    <m:Label
+                                        id="CustomerRole-label"
+                                        text="Customer Role"
+                                    />
+                                    <m:Text
+                                        id="CustomerRole-text"
+                                        text="{context>/CustomerRole}"
+                                    />
+                                    <m:Label
+                                        id="Language-label"
+                                        text="Language"
+                                    />
+                                    <m:Text
+                                        id="Language-text"
+                                        text="{context>/Language}"
+                                    />
+                                    <m:Label
+                                        id="postalCode-label"
+                                        text="Postal Code"
+                                    />
+                                    <m:Text
+                                        id="postalCode-text"
+                                        text="{context>/postalCode}"
+                                    />
+                                    <m:Label
+                                        id="Street-label"
+                                        text="Street"
+                                    />
+                                    <m:Text
+                                        id="Street-text"
+                                        text="{context>/Street}"
                                     />
                                 </form:content>
                             </form:SimpleForm>
@@ -125,12 +221,59 @@
                                         text="{context>/SOID}"
                                     />
                                     <m:Label
+                                        id="_IDGenLabel199"
+                                        text="Dealer Code"
+                                    />
+                                    <m:Text
+                                        id="_IDGenText199"
+                                        text="{context>/dealerCode}"
+                                    />
+                                    <m:Label
+                                        id="_IDGenLabel190"
+                                        text="Delivery Location"
+                                    />
+                                    <m:Text
+                                        id="_IDGenText90"
+                                        text="{context>/deliveryLocation}"
+                                    />
+                                    <m:Label
+                                        id="_IDGenLabel191"
+                                        text="Distribution Channel"
+                                    />
+                                    <m:Text
+                                        id="_IDGenText91"
+                                        text="{context>/distributionChannels}"
+                                    /><m:Label
+                                        id="_IDGenLabel22345"
+                                        text="Division"
+                                    />
+                                    <m:Text
+                                        id="_IDGenText22345"
+                                        text="{context>/division}"
+                                    />
+                                    <m:Label
                                         id="_IDGenLabel20"
                                         text="Quotation ID"
                                     />
                                     <m:Text
                                         id="_IDGenText14"
                                         text="{context>/QuotationID}"
+                                    />
+                                    <m:Label
+                                        id="_IDGenLabel221"
+                                        text="docType"
+                                    />
+                                    <m:Text
+                                        id="_IDGenText125"
+                                        text="{context>/docType}"
+                                    />
+                                    <m:Label
+                                        id="_IDGenLabel212"
+                                        text="salesOrg"
+                                    />
+                                    <m:Text
+                                        id="_IDGenText152"
+                                        text="{context>/salesOrg}"
                                     />
                                     <m:Label
                                         id="_IDGenLabel21"
@@ -436,6 +579,7 @@
                                         <ui:Column
                                             id="_IDGenColumn17"
                                             width="150px"
+                                            hAlign="Center"
                                         >
                                             <m:Label
                                                 id="_IDGenLabel17"
@@ -452,6 +596,7 @@
                                         <ui:Column
                                             id="_IDGenColumn10"
                                             width="150px"
+                                            hAlign="Center"
                                         >
                                             <m:Label
                                                 id="_IDGenLabel10"
@@ -470,6 +615,7 @@
                                         <ui:Column
                                             id="_IDGenColumn11"
                                             width="150px"
+                                            hAlign="Center"
                                         >
                                             <m:Label
                                                 id="_IDGenLabel11"
@@ -489,6 +635,7 @@
                                         <ui:Column
                                             id="_IDGenColumn12"
                                             width="150px"
+                                            hAlign="Center"
                                         >
                                             <m:Label
                                                 id="_IDGenLabel12"
@@ -525,6 +672,7 @@
                                         <ui:Column
                                             id="_IDGenColumn13"
                                             width="150px"
+                                            hAlign="Center"
                                         >
                                             <m:Label
                                                 id="_IDGenLabel13"

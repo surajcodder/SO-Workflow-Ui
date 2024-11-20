@@ -140,7 +140,6 @@
         "type": "object",
         "required": [
           "CustomerID",
-          
           "Name",
           "Address",
           "link",
@@ -149,6 +148,17 @@
           "contactNumber",
           "email",
           "VAN",
+          "jobTitle",
+          "Department",
+          "TaxId",
+          "CustomerCode",
+          "CustomerRole",
+          "Currency",
+          "Language",
+          "Country",
+          "City",
+          "Street",
+          "postalCode",
           "address",
           "bankName",
           "accNumber",
@@ -159,11 +169,17 @@
           "commentLink",
           "QuotationID",
           "Status",
+          "docType",
+          "salesOrg",
+          "dealerCode",
+          "deliveryLocation",
+          "division",
+          "distributionChannels",
           "POid",
           "SOID",
           "TotalPrice",
           "TaxAmount",
-          "GrandTotal",
+          "GrandTotal", 
           "POReleaseDate",
           "ProfileIcon"
         ],
@@ -212,6 +228,61 @@
             "type": "string",
             "title": "VAN",
             "description": "Vendor Account Number"
+          },
+          "jobTitle": {
+            "type": "string",
+            "title": "Job Title",
+            "description": "Job title of the contact person"
+          },
+          "Department": {
+            "type": "string",
+            "title": "Department",
+            "description": "Department of the contact person"
+          },
+          "TaxId": {
+            "type": "string",
+            "title": "TaxId",
+            "description": "Department of the contact person"
+          },
+          "CustomerCode": {
+            "type": "string",
+            "title": "CustomerCode",
+            "description": "Department of the contact person"
+          },
+          "CustomerRole": {
+            "type": "string",
+            "title": "CustomerRole",
+            "description": "Department of the contact person"
+          },
+          "Currency": {
+            "type": "string",
+            "title": "Currency",
+            "description": "Currency for the transaction"
+          },
+          "Language": {
+            "type": "string",
+            "title": "Language",
+            "description": "Preferred language for communication"
+          },
+          "Country": {
+            "type": "string",
+            "title": "Country",
+            "description": "Country of the Company"
+          },
+          "City": {
+            "type": "string",
+            "title": "City",
+            "description": "City of the Company"
+          },
+          "Street": {
+            "type": "string",
+            "title": "Street",
+            "description": "Street address of the Company"
+          },
+          "postalCode": {
+            "type": "string",
+            "title": "Postal Code",
+            "description": "Postal code of the Company location"
           },
           "address": {
             "type": "string",
@@ -263,6 +334,36 @@
             "type": "string",
             "title": "Status",
             "description": "Current status of the quotation or sales order"
+          },
+          "docType": {
+            "type": "string",
+            "title": "Document Type",
+            "description": "Type of document related to the order"
+          },
+          "salesOrg": {
+            "type": "string",
+            "title": "Sales Organization",
+            "description": "Sales organization related to the transaction"
+          },
+          "dealerCode": {
+            "type": "string",
+            "title": "Dealer Code",
+            "description": "Code of the dealer"
+          },
+          "deliveryLocation": {
+            "type": "string",
+            "title": "Delivery Location",
+            "description": "Location where the delivery is to be made"
+          },
+          "division": {
+            "type": "string",
+            "title": "Division",
+            "description": "Division related to the transaction"
+          },
+          "distributionChannels": {
+            "type": "string",
+            "title": "Distribution Channels",
+            "description": "Distribution channels involved in the transaction"
           },
           "POid": {
             "type": "string",
