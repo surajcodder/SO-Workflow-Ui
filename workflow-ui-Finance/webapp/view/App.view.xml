@@ -187,6 +187,14 @@
                                         id="Street-text"
                                         text="{context>/Street}"
                                     />
+                                    <m:Label
+                                        id="location-label"
+                                        text="Location"
+                                    />
+                                    <m:Text
+                                        id="location-text"
+                                        text="{context>/address}"
+                                    />
                                 </form:content>
                             </form:SimpleForm>
                         </ObjectPageSubSection>
@@ -243,7 +251,8 @@
                                     <m:Text
                                         id="_IDGenText91"
                                         text="{context>/distributionChannels}"
-                                    /><m:Label
+                                    />
+                                    <m:Label
                                         id="_IDGenLabel22345"
                                         text="Division"
                                     />
@@ -329,7 +338,7 @@
                                             >
                                                 <m:Label
                                                     id="_IDGenLabel"
-                                                    text="Material Code"
+                                                    text="Vehicle Code"
                                                 />
                                                 <ui:template>
                                                     <m:Text
@@ -628,7 +637,7 @@
                                                     textAlign="Center"
                                                     width="100%"
                                                     change="onDataChange"
-                                                    displayFormat="yyyy-MM-dd" 
+                                                    displayFormat="yyyy-MM-dd"
                                                 />
                                             </ui:template>
                                         </ui:Column>
@@ -838,9 +847,7 @@
                                 width="100%"
                             >
                                 <m:Toolbar id="_IDGenToolbar">
-                                    <m:Title
-                                        id="_IDGenTitle1"
-                                    />
+                                    <m:Title id="_IDGenTitle1" />
                                     <m:ToolbarSpacer
                                         id="_IDGenToolbarSpacer1"
                                     />
