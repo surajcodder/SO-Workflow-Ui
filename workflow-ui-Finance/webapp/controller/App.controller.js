@@ -11,7 +11,24 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
         var oUploadSet = this.byId("uploadSet1");
         oUploadSet.setMode("None");
         this.initializeDatePickerMinDate();
-        this.initializeDatePickerMinDateForDueDate();
+        this.initializeDatePickerMinDateForDueDate();// Access the UploadSet instance
+        // var oUploadSet = sap.ui.getCore().byId("uploadSet1");
+        
+        // // Access the toolbar of the UploadSet
+        // var oToolbar = oUploadSet.getToolbar();
+        
+        // // Find and remove the Upload button from the toolbar
+        // if (oToolbar) {
+        //     var aToolbarContent = oToolbar.getContent();
+        //     aToolbarContent.forEach(function (oControl) {
+        //         // Check for Upload button (usually a Button or control with specific role)
+        //         if (oControl.getText && oControl.getText() === "Upload") {
+        //             oToolbar.removeContent(oControl);
+        //         }
+        //     });
+        // }
+        
+
       },
       // Handle scrolling behavior
       onScroll: function (oEvent) {
@@ -81,28 +98,28 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
 
       // AJAX Call for OData before rendering
       onBeforeRendering: function () {
-         // Third AJAX call for PDF files
-         var oView = this.getView();
-         var baseUrl = "https://f2dbf934trial-hanapri-uni-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/Files";
-         var url1 = "https://f2dbf934trial-hanapri-uni-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/"
+        // Third AJAX call for PDF files
+        var oView = this.getView();
+        var baseUrl = "https://f2dbf934trial-hanapri-uni-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/Files";
+        var url1 = "https://f2dbf934trial-hanapri-uni-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/"
         debugger
-         // Perform AJAX request to retrieve data
-         $.ajax({
-             url: baseUrl,
-             method: "GET",
-             success: function(oData) {
-              debugger
-                 console.log("Files", oData);
-                 var oModel = new JSONModel();
-                 oModel.setData({ pdf: oData.value });
-                 debugger
-                 oView.setModel(oModel, "myFile");
+        // Perform AJAX request to retrieve data
+        $.ajax({
+          url: baseUrl,
+          method: "GET",
+          success: function (oData) {
+            debugger
+            console.log("Files", oData);
+            var oModel = new JSONModel();
+            oModel.setData({ pdf: oData.value });
+            debugger
+            oView.setModel(oModel, "myFile");
 
-             },
-             error: function(jqXHR, textStatus, errorThrown) {
-                 console.error("Error fetching data: " + textStatus + ' ' + errorThrown);
-             }
-         });
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            console.error("Error fetching data: " + textStatus + ' ' + errorThrown);
+          }
+        });
         debugger
         setTimeout(async function () {
           debugger
@@ -136,23 +153,141 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
             var purchaseOrderId = baseUrl[0]?.purchaseOrderUuid.replace(/['"]/g, '');
             if (purchaseOrderId) {
               const baseUrlComments = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
-              const curl = baseUrlComments + `PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToComments`;
+              const curl = baseUrlComments + `PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToComments?$orderby=createdAt asc`;
 
               const commentsData = await $.ajax({ url: curl, method: "GET" });
               var oModelComments = new sap.ui.model.json.JSONModel();
               oModelComments.setData({ Comments: commentsData.value });
               oView.setModel(oModelComments, "myComments");
               console.log("Comments Data", commentsData);
+              // Scroll to the latest comment after data is set
+              debugger
+              oModelComments.attachEventOnce("change", function () {
+                debugger
+                this._scrollToLatestComment();
+            }.bind(this), 1000);            
             } else {
               console.warn("PurchaseOrderUuid not available in base URL data.");
             }
             debugger
-           
+
 
           } catch (error) {
             console.error("Error during AJAX requests:", error);
           }
-        }.bind(this), 1000);
+        }.bind(this), 300);
+
+          //AJAX CALLS FOR SALES ORG, DOC TYPE, DIVISION AND DISTRIBUTION CHANNEL 
+          setTimeout(function () {
+            var oView = this.getView();
+            var oModel = new sap.ui.model.json.JSONModel();
+            debugger;
+            var oData = oView.oPropagatedProperties.oModels.context.oData;
+            var salesOrg = oData.salesOrg;
+        
+            var baseUrl1 = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
+            var filterUrl = baseUrl1 + `?$filter=sHId eq '${salesOrg}'`;
+        
+            $.ajax({
+              url: filterUrl,
+              method: "GET",
+              success: function (oData12) {
+                var descri = oData12.value[0].sHDescription;
+                oModel.setData({SalesOrgDescription:descri});
+                oView.setModel(oModel, "SalesModel");
+                debugger
+                console.log("SH Description:", descri);
+                console.log(oView);
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Error fetching data: " + textStatus + " " + errorThrown);
+              },
+            });
+          }.bind(this), 1000);
+      
+          setTimeout(function () {
+            var oView = this.getView();
+            var oModel = new sap.ui.model.json.JSONModel();
+            debugger;
+            var oData = oView.oPropagatedProperties.oModels.context.oData;
+            var districhannel = oData.distributionChannels;
+        
+            var baseUrl2 = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
+            var filterUrl1 = baseUrl2 + `?$filter=sHId eq '${districhannel}'`;
+        
+            $.ajax({
+              url: filterUrl1,
+              method: "GET",
+              success: function (oData13) {
+                var nutty = oData13.value[0].sHDescription;
+                oModel.setData({Distribution:nutty});
+                oView.setModel(oModel, "DistributionModel");
+                debugger
+                console.log("SH Description:", nutty);
+                console.log(oView);
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Error fetching data: " + textStatus + " " + errorThrown);
+              },
+            });
+          }.bind(this), 1000);
+      
+          setTimeout(function () {
+            var oView = this.getView();
+            var oModel = new sap.ui.model.json.JSONModel();
+            debugger;
+            var oData = oView.oPropagatedProperties.oModels.context.oData;
+            var divi = oData.division;
+        
+            var baseUrl3 = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
+            var filterUrl2 = baseUrl3 + `?$filter=sHId eq '${divi}'`;
+        
+            $.ajax({
+              url: filterUrl2,
+              method: "GET",
+              success: function (oData14) {
+                var diving = oData14.value[0].sHDescription;
+                oModel.setData({Divis:diving});
+                oView.setModel(oModel, "DivisionModel");
+                debugger
+                console.log("SH Description:", diving);
+                console.log(oView);
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Error fetching data: " + textStatus + " " + errorThrown);
+              },
+            });
+          }.bind(this), 1000);
+      
+          setTimeout(function () {
+            var oView = this.getView();
+            var oModel = new sap.ui.model.json.JSONModel();
+            debugger;
+            var oData = oView.oPropagatedProperties.oModels.context.oData;
+            var docu = oData.docType;
+        
+            var baseUrl4 = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
+            var filterUrl3 = baseUrl4 + `?$filter=sHId eq '${docu}'`;
+        
+            $.ajax({
+              url: filterUrl3,
+              method: "GET",
+              success: function (oData15) {
+                var doctype = oData15.value[0].sHDescription;
+                oModel.setData({Documentty:doctype});
+                oView.setModel(oModel, "DocumentModel");
+                debugger
+                console.log("SH Description:", doctype);
+                console.log(oView);
+              },
+              error: function (jqXHR, textStatus, errorThrown) {
+                console.error("Error fetching data: " + textStatus + " " + errorThrown);
+              },
+            });
+          }.bind(this), 1000);
+
+
+
       },
 
       onOpenPressed: function (oEvent) {
@@ -305,21 +440,84 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
       },
 
       onBrowseHistoryPress: function () {
+        debugger
         var oDialog = this.byId("commentHistoryDialog");
+        var oScrollContainer = this.byId("scrollContainer");
 
         if (!oDialog) {
           this.loadFragment({
             name: "workflowmanagement.workflowuimodule.view.CommentHistoryDialog"
           }).then(function (oDialog) {
             oDialog.open();
-            this._attachClickOutsideListener(oDialog);
+            this._attachClickOutsideListener(oDialog); 
+
+            // Ensure the Timeline scrolls to the bottom after the dialog is loaded
+            this._scrollToLatestComment();
           }.bind(this));
         } else {
           oDialog.open();
           this._attachClickOutsideListener(oDialog);
+
+          // Ensure the Timeline scrolls to the bottom when reopened
+          this._scrollToLatestComment();
+          debugger
         }
       },
+
+
+      _scrollToLatestComment: function () {
+        debugger
+        var oScrollContainer = this.byId("scrollContainer");
+        var oDomRef = oScrollContainer.getDomRef();
+        debugger
+        var height = oDomRef.scrollHeight;
+        
+        debugger
+    
+        if (oDomRef) {
+          oScrollContainer.scrollTo(0, height, 0);
+            // Delay ensures rendering is complete before scrolling
+            // setTimeout(function () {
+            //     oDomRef.scrollTop = oDomRef.scrollHeight; // Scroll to the bottom
+            // },300); // Adjust delay time if necessary
+        }
+    },    
+    onDialogOpen: function() {
+      debugger
+      this._scrollToLatestComment();
+  },       
+
+
+      // onCloseHistoryDialog: function () {
+      //   var oDialog = this.byId("commentHistoryDialog");
+      //   oDialog.close();
+      //   this._detachClickOutsideListener();
+      // },
+
+      // _attachClickOutsideListener: function (oDialog) {
+      //   var $dialog = oDialog.$(); // Get jQuery reference to dialog DOM element
+      //   var that = this;
+
+      //   this._outsideClickHandler = function (oEvent) {
+      //     if (!$dialog[0].contains(oEvent.target)) {
+      //       that.onCloseHistoryDialog();
+      //     }
+      //   };
+
+      //   // Attach event listener for clicks outside the dialog
+      //   $(document).on("mousedown", this._outsideClickHandler);
+      // },
+
+      // _detachClickOutsideListener: function () {
+      //   // Remove the click outside event listener
+      //   if (this._outsideClickHandler) {
+      //     $(document).off("mousedown", this._outsideClickHandler);
+      //     this._outsideClickHandler = null;
+      //   }
+      // },
+
       onCloseHistoryDialog: function () {
+        debugger
         var oDialog = this.byId("commentHistoryDialog");
         oDialog.close();
         this._detachClickOutsideListener();
@@ -359,9 +557,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
         oPromise.resolve();
       },
 
-      onCloseHistoryDialog: function () {
-        this.byId("commentHistoryDialog").close();
-      },
+      
     }
   );
 });

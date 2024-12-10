@@ -78,22 +78,45 @@ sap.ui.define(
                 { id: "ifscCode-input", name: "IFSC Code" },
                 { id: "branch-input", name: "Branch" },
                 { id: "accHoldersName-input", name: "Account Holder's Name" },
-                { id: "dueDate-input", name: "Due Date" }
+                { id: "dueDate-input", name: "Due Date" },
               ];
 
               requiredFields.forEach(field => {
                 var oField = oRootControl.byId(field.id);
                 if (oField) {
                   var fieldValue = oField.getValue();
-                  if (!fieldValue.trim()) {
+                  // Trim spaces from input value
+                  fieldValue = fieldValue.trim();
+
+                  if (!fieldValue) {
                     sap.m.MessageToast.show(`${field.name} is required to proceed.`);
                     oField.setValueState(sap.ui.core.ValueState.Error);
                     canProceed = false;
                   } else {
-                    oField.setValueState(sap.ui.core.ValueState.None);
-                  }
+                    // Additional validation for account number
+                    if (field.id === "accNumber-input") {
+                      if (!/^\d{9,18}$/.test(fieldValue)) { // Numeric and between 9-18 digits
+                        sap.m.MessageToast.show(`${field.name} must be numeric and between 9-18 digits.`);
+                        oField.setValueState(sap.ui.core.ValueState.Error);
+                        canProceed = false;
+                      }
+                    }
+                  
+                    // Additional validation for IFSC code
+                    if (field.id === "ifscCode-input") {
+                      // IFSC Code should be 11 characters long, starting with 4 alphabets, followed by 0, and ending with 6 digits
+                      if (!/^[A-Za-z]{4}0\d{6}$/.test(fieldValue)) {
+                        sap.m.MessageToast.show(`${field.name} must be in the format: 4 letters, '0', and 6 digits.`);
+                        oField.setValueState(sap.ui.core.ValueState.Error);
+                        canProceed = false;
+                      }
+                    }
+                  
+                    oField.setValueState(sap.ui.core.ValueState.None); // Clear error state for valid inputs
+                  }                                   
                 }
               });
+
 
               // Validate delivery details fields and update them one by one
               var oTable = oRootControl.byId("delivery-details-table");
@@ -120,6 +143,12 @@ sap.ui.define(
                   if (oDeliveryRow.shippingCharges === undefined || oDeliveryRow.shippingCharges === null || oDeliveryRow.shippingCharges.trim() === "") {
                     sap.m.MessageToast.show(`Shipping Charges are required for row ${index + 1}.`);
                     isRowValid = false;
+                  }else {
+                    // Validate that shippingCharges is numeric
+                    if (isNaN(oDeliveryRow.shippingCharges)) {
+                      sap.m.MessageToast.show(`Shipping Charges must be numeric.`);
+                      isRowValid = false;
+                    }
                   }
 
                   if (!isRowValid) {
@@ -132,7 +161,7 @@ sap.ui.define(
                       // Refresh each row's path to get the latest UI data in each iteration
                       var rowPath = sPath + "/" + index;
                       oDeliveryRow = oModel.getProperty(rowPath); // Refreshes data for each row
-                    
+
                       var isRowValid = true;
                       if (!oDeliveryRow.vehicleID) {
                         sap.m.MessageToast.show(`Vehicle ID is required for row ${index + 1}.`);
@@ -146,13 +175,13 @@ sap.ui.define(
                         sap.m.MessageToast.show(`Shipping Charges are required for row ${index + 1}.`);
                         isRowValid = false;
                       }
-                    
+
                       if (!isRowValid) {
                         canProceed = false;
                       } else {
                         const baseUrlDelivery = 'https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
                         var deliveryUrl = `${baseUrlDelivery}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToVehicle(vehicleID=${oDeliveryRow.vehicleID},IsActiveEntity=true)`;
-                    
+
                         $.ajax({
                           url: deliveryUrl,
                           method: "PATCH",
@@ -333,7 +362,7 @@ sap.ui.define(
           jQuery.ajax({
             url: this._getWorkflowRuntimeBaseURL() + "/xsrf-token",
             method: "GET",
-            
+
             async: false,
             headers: {
               "X-CSRF-Token": "Fetch",

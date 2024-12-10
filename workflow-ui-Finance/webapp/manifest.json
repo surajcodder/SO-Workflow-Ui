@@ -151,8 +151,6 @@
           "jobTitle",
           "Department",
           "TaxId",
-          "CustomerCode",
-          "CustomerRole",
           "Currency",
           "Language",
           "Country",
@@ -242,16 +240,6 @@
           "TaxId": {
             "type": "string",
             "title": "TaxId",
-            "description": "Department of the contact person"
-          },
-          "CustomerCode": {
-            "type": "string",
-            "title": "CustomerCode",
-            "description": "Department of the contact person"
-          },
-          "CustomerRole": {
-            "type": "string",
-            "title": "CustomerRole",
             "description": "Department of the contact person"
           },
           "Currency": {

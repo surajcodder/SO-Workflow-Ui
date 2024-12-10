@@ -45,7 +45,7 @@
                                 <form:content>
                                     <m:Label
                                         id="companyName-label"
-                                        text="Company Name"
+                                        text="Company Names"
                                     />
                                     <m:Text
                                         id="companyName-text"
@@ -148,22 +148,6 @@
                                         text="{context>/Currency}"
                                     />
                                     <m:Label
-                                        id="CustomerCode-label"
-                                        text="Customer Code"
-                                    />
-                                    <m:Text
-                                        id="CustomerCode-text"
-                                        text="{context>/CustomerCode}"
-                                    />
-                                    <m:Label
-                                        id="CustomerRole-label"
-                                        text="Customer Role"
-                                    />
-                                    <m:Text
-                                        id="CustomerRole-text"
-                                        text="{context>/CustomerRole}"
-                                    />
-                                    <m:Label
                                         id="Language-label"
                                         text="Language"
                                     />
@@ -250,16 +234,14 @@
                                     />
                                     <m:Text
                                         id="_IDGenText91"
-                                        text="{context>/distributionChannels}"
-                                    />
+                                        text="{= ${context>/distributionChannels} + ' (' + (${DistributionModel>/Distribution}) + ')' }" />
                                     <m:Label
                                         id="_IDGenLabel22345"
                                         text="Division"
                                     />
                                     <m:Text
                                         id="_IDGenText22345"
-                                        text="{context>/division}"
-                                    />
+                                        text="{= ${context>/division} + ' (' + (${DivisionModel>/Divis}) + ')' }" />
                                     <m:Label
                                         id="_IDGenLabel20"
                                         text="Quotation ID"
@@ -270,20 +252,18 @@
                                     />
                                     <m:Label
                                         id="_IDGenLabel221"
-                                        text="docType"
+                                        text="Document Type"
                                     />
                                     <m:Text
                                         id="_IDGenText125"
-                                        text="{context>/docType}"
-                                    />
+                                         text="{= ${context>/docType} + ' (' + (${DocumentModel>/Documentty}) + ')' }" />
                                     <m:Label
                                         id="_IDGenLabel212"
-                                        text="salesOrg"
+                                        text="Sales Organization"
                                     />
                                     <m:Text
                                         id="_IDGenText152"
-                                        text="{context>/salesOrg}"
-                                    />
+                                        text="{= ${context>/salesOrg} + ' (' + (${SalesModel>/SalesOrgDescription}) + ')' }" />
                                     <m:Label
                                         id="_IDGenLabel21"
                                         text="Status"
@@ -303,6 +283,7 @@
                     id="vehicleDetailsSection"
                     title="Vehicle Details"
                     titleUppercase="false"
+                    class="customVehicleSubSection"
                 >
                     <subSections>
                         <ObjectPageSubSection
@@ -328,8 +309,8 @@
                                         width="100%"
                                         rowHeight="50%"
                                         selectionMode="None"
-                                        visibleRowCount="2"
-                                    >
+                                        visibleRowCount="{= Math.max(1, ${myModel>/Files}.length)}"
+                                        >
                                         <ui:columns>
                                             <ui:Column
                                                 id="_IDGenColumn"
@@ -418,7 +399,7 @@
                                             </ui:Column>
                                             <ui:Column
                                                 id="_IDGenColumn5"
-                                                width="100px"
+                                                width="150px"
                                                 hAlign="Center"
                                             >
                                                 <m:Label
@@ -497,6 +478,40 @@
                                                     <m:Text
                                                         id="_IDGenText10"
                                                         text="{myModel>totalPrice}"
+                                                        textAlign="Center"
+                                                    />
+                                                </ui:template>
+                                            </ui:Column>
+                                            <ui:Column
+                                                id="_IDGenColumn19"
+                                                width="150px"
+                                                hAlign="Center"
+                                            >
+                                                <m:Label
+                                                    id="_IDGenLabel119"
+                                                    text="Partner Role"
+                                                />
+                                                <ui:template>
+                                                    <m:Text
+                                                        id="_IDGenText110"
+                                                        text="{myModel>partnerRole}"
+                                                        textAlign="Center"
+                                                    />
+                                                </ui:template>
+                                            </ui:Column>
+                                            <ui:Column
+                                                id="_IDGenColumn91"
+                                                width="150px"
+                                                hAlign="Center"
+                                            >
+                                                <m:Label
+                                                    id="_IDGenLabel911"
+                                                    text="Partner Number"
+                                                />
+                                                <ui:template>
+                                                    <m:Text
+                                                        id="_IDGenText101"
+                                                        text="{myModel>partnerNumber}"
                                                         textAlign="Center"
                                                     />
                                                 </ui:template>
@@ -582,8 +597,8 @@
                                     width="100%"
                                     rowHeight="50%"
                                     selectionMode="None"
-                                    visibleRowCount="2"
-                                >
+                                    visibleRowCount="{= Math.max(1, ${myModel>/Files}.length)}"
+                                    >
                                     <ui:columns>
                                         <ui:Column
                                             id="_IDGenColumn17"
@@ -796,6 +811,7 @@
                                 uploadEnabled="false"
                                 items="{myFile>/pdf}"
                             >
+
                                 <upload:items>
                                     <upload:UploadSetItem
                                         id="uploadSetItem1"
@@ -874,74 +890,43 @@
         </ObjectPageLayout>
     </m:App>
     <m:Dialog
-        id="commentHistoryDialog"
-        title="Comment History"
-        stretch="false"
-        contentWidth="50%"
-        contentHeight="400px"
+    id="commentHistoryDialog"
+    title="Comment History"
+    stretch="false"
+    contentWidth="50%"
+    contentHeight="400px"
+    afterOpen="onDialogOpen"
     >
-        <m:customHeader>
-            <m:Toolbar id="_IDGenToolbar1">
-                <m:Title
-                    id="_IDGenTitle"
-                    text="Comment History"
-                />
-                <m:ToolbarSpacer id="_IDGenToolbarSpacer" />
-                <m:Button
-                    id="_IDGenButton"
-                    text="Close"
-                    press="onCloseHistoryDialog"
-                />
-            </m:Toolbar>
-        </m:customHeader>
-        <m:VBox id="_IDGenVBox">
-            <!--  Toolbar with filters  -->
-            <!-- <m:OverflowToolbar id="_IDGenOverflowToolbar">
-                <m:Label
-                    id="_IDGenLabel15"
-                    text="Filter by Type"
-                />
-                <m:Select
-                    id="filterByTypeSelect"
-                    change="onFilterTypeChange"
-                >
-                    <core:Item
-                        id="_IDGenItem"
-                        key="None"
-                        text="None"
-                    />
-                    <core:Item
-                        id="_IDGenItem1"
-                        key="Day"
-                        text="Day"
-                    />
-                    <core:Item
-                        id="_IDGenItem2"
-                        key="Month"
-                        text="Month"
-                    />
-                </m:Select>
-            </m:OverflowToolbar> -->
-            <!--  Timeline for Comment History  -->
-            <suite:Timeline
-                id="_IDGenTimeline"
-                enableDoubleSided="true"
-                groupBy="Day"
-                sortOldestFirst="true"
-                content="{myComments>/Comments}"
-                showSearch="false"
-                showSort="false"
-                showHeaderBar="false"
-            >
-                <suite:content>
-                    <suite:TimelineItem
-                        id="_IDGenTimelineItem"
-                        dateTime="{myComments>createdAt}"
-                        title="{myComments>createdBy}"
-                        text="{myComments>commentsText}"
-                    />
-                </suite:content>
-            </suite:Timeline>
-        </m:VBox>
-    </m:Dialog>
+    <m:customHeader>
+        <m:Toolbar id="_IDGenToolbar1">
+            <m:Title id="_IDGenTitle" text="Comment History" />
+            <m:ToolbarSpacer id="_IDGenToolbarSpacer" />
+            <m:Button id="_IDGenButton" text="Close" press="onCloseHistoryDialog" />
+        </m:Toolbar>
+    </m:customHeader>
+    <m:ScrollContainer
+    id="scrollContainer"
+    width="100%"
+    height="400px" 
+    vertical="true"
+>
+    <m:VBox
+        id="commentContainer"
+        width="100%"
+        class="comment-box"
+    >
+    <m:List id="chatList"  items="{path : 'myComments>/Comments', parameters: {$orderby: 'createdAt desc'}, filters: [{ path: 'customerId', operator: 'EQ', value1: null } ]}" class="chatList" >
+        <m:CustomListItem id="_IDGenCustomListItem1" class="items">
+                <m:HBox id="_IDGenHBox11" justifyContent="{= ${myComments>user} === 'Customer' ? 'Start' : 'End'}" alignItems="{= ${myComments>user} === 'Customer' ? 'Start' : 'End'}" class ="messageContainer">
+                    <m:VBox id="_IDGenVBox5" class="messageHeader">
+                        <m:Text id="_IDGenText51" text="{myComments>user}" class="messageTime" />
+                        <m:Text id="_IDGenText41" text="{myComments>commentsText}" class="messageText"/>
+                        <m:Text id="_IDGenText31" text="{myComments>createdAt}" class="messageTime" />
+                    </m:VBox>
+                </m:HBox>
+        </m:CustomListItem>
+    </m:List>
+    </m:VBox>
+</m:ScrollContainer>
+</m:Dialog>
 </mvc:View>
