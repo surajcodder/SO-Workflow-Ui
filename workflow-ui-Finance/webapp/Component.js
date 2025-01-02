@@ -71,55 +71,8 @@ sap.ui.define(
                 }
               }
 
-              // Validate payment details fields
-              const requiredFields = [
-                { id: "bankName-input", name: "Bank Name" },
-                { id: "accNumber-input", name: "Account Number" },
-                { id: "ifscCode-input", name: "IFSC Code" },
-                { id: "branch-input", name: "Branch" },
-                { id: "accHoldersName-input", name: "Account Holder's Name" },
-                { id: "dueDate-input", name: "Due Date" },
-              ];
-
-              requiredFields.forEach(field => {
-                var oField = oRootControl.byId(field.id);
-                if (oField) {
-                  var fieldValue = oField.getValue();
-                  // Trim spaces from input value
-                  fieldValue = fieldValue.trim();
-
-                  if (!fieldValue) {
-                    sap.m.MessageToast.show(`${field.name} is required to proceed.`);
-                    oField.setValueState(sap.ui.core.ValueState.Error);
-                    canProceed = false;
-                  } else {
-                    // Additional validation for account number
-                    if (field.id === "accNumber-input") {
-                      if (!/^\d{9,18}$/.test(fieldValue)) { // Numeric and between 9-18 digits
-                        sap.m.MessageToast.show(`${field.name} must be numeric and between 9-18 digits.`);
-                        oField.setValueState(sap.ui.core.ValueState.Error);
-                        canProceed = false;
-                      }
-                    }
-                  
-                    // Additional validation for IFSC code
-                    if (field.id === "ifscCode-input") {
-                      // IFSC Code should be 11 characters long, starting with 4 alphabets, followed by 0, and ending with 6 digits
-                      if (!/^[A-Za-z]{4}0\d{6}$/.test(fieldValue)) {
-                        sap.m.MessageToast.show(`${field.name} must be in the format: 4 letters, '0', and 6 digits.`);
-                        oField.setValueState(sap.ui.core.ValueState.Error);
-                        canProceed = false;
-                      }
-                    }
-                  
-                    oField.setValueState(sap.ui.core.ValueState.None); // Clear error state for valid inputs
-                  }                                   
-                }
-              });
-
-
-              // Validate delivery details fields and update them one by one
               var oTable = oRootControl.byId("delivery-details-table");
+
               if (oTable) {
                 var oModel = oTable.getModel("myModel");
                 var oData = oRootControl.getModel("context").getData();
@@ -128,80 +81,86 @@ sap.ui.define(
                 var sPath = "/Files";
                 var oDeliveryData = oModel.getProperty(sPath);
 
+                
                 oDeliveryData.forEach(function (oDeliveryRow, index) {
                   var rowPath = sPath + "/" + index;
+                  oDeliveryRow = oModel.getProperty(rowPath); // Refresh row data
+              
+                  console.log(`Row ${index + 1} - Vehicle ID:`, oDeliveryRow.vehicleID);
+                  console.log(`Row ${index + 1} - Delivery Date:`, oDeliveryRow.delDate);
+                  console.log(`Row ${index + 1} - Delivery Lead Time:`, oDeliveryRow.deliveryLeadTime);
+                  console.log(`Row ${index + 1} - Transport Mode:`, oDeliveryRow.shippingMethod);
+              
                   var isRowValid = true;
-
+              
+                  // Validation
                   if (!oDeliveryRow.vehicleID) {
-                    sap.m.MessageToast.show(`Vehicle ID is required for row ${index + 1}.`);
-                    isRowValid = false;
-                  }
-                  if (!oDeliveryRow.deliveryDate) {
-                    sap.m.MessageToast.show(`Delivery Date is required for row ${index + 1}.`);
-                    isRowValid = false;
-                  }
-                  if (oDeliveryRow.shippingCharges === undefined || oDeliveryRow.shippingCharges === null || oDeliveryRow.shippingCharges.trim() === "") {
-                    sap.m.MessageToast.show(`Shipping Charges are required for row ${index + 1}.`);
-                    isRowValid = false;
-                  }else {
-                    // Validate that shippingCharges is numeric
-                    if (isNaN(oDeliveryRow.shippingCharges)) {
-                      sap.m.MessageToast.show(`Shipping Charges must be numeric.`);
+                      sap.m.MessageToast.show(`Row ${index + 1}: Vehicle ID is required.`);
                       isRowValid = false;
-                    }
                   }
-
+                  if (!oDeliveryRow.delDate) {
+                      sap.m.MessageToast.show(`Row ${index + 1}: Delivery Date is required.`);
+                      isRowValid = false;
+                  }
+              
+                  // If any of the fields are missing, prevent proceeding
                   if (!isRowValid) {
-                    canProceed = false;
-                  } else {
-                    // Send individual AJAX request for each row
-                    const baseUrlDelivery = 'https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
-                    var deliveryUrl = `${baseUrlDelivery}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToVehicle(vehicleID=${oDeliveryRow.vehicleID},IsActiveEntity=true)`;
-                    oDeliveryData.forEach(function (oDeliveryRow, index) {
-                      // Refresh each row's path to get the latest UI data in each iteration
-                      var rowPath = sPath + "/" + index;
-                      oDeliveryRow = oModel.getProperty(rowPath); // Refreshes data for each row
-
-                      var isRowValid = true;
-                      if (!oDeliveryRow.vehicleID) {
-                        sap.m.MessageToast.show(`Vehicle ID is required for row ${index + 1}.`);
-                        isRowValid = false;
-                      }
-                      if (!oDeliveryRow.deliveryDate) {
-                        sap.m.MessageToast.show(`Delivery Date is required for row ${index + 1}.`);
-                        isRowValid = false;
-                      }
-                      if (oDeliveryRow.shippingCharges === undefined || oDeliveryRow.shippingCharges === null || oDeliveryRow.shippingCharges.trim() === "") {
-                        sap.m.MessageToast.show(`Shipping Charges are required for row ${index + 1}.`);
-                        isRowValid = false;
-                      }
-
-                      if (!isRowValid) {
-                        canProceed = false;
-                      } else {
-                        const baseUrlDelivery = 'https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
-                        var deliveryUrl = `${baseUrlDelivery}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToVehicle(vehicleID=${oDeliveryRow.vehicleID},IsActiveEntity=true)`;
-
-                        $.ajax({
-                          url: deliveryUrl,
-                          method: "PATCH",
-                          contentType: "application/json",
-                          data: JSON.stringify({
-                            deliveryDate: oDeliveryRow.deliveryDate,
-                            shippingCharges: oDeliveryRow.shippingCharges,
-                            shippingMethod: oDeliveryRow.shippingMethod
-                          }),
-                          success: function (oData) {
-                            console.log(`Delivery details updated for vehicle ID: ${oDeliveryRow.vehicleID}`, oData);
-                          },
-                          error: function (jqXHR, textStatus, errorThrown) {
-                            console.error(`Error updating delivery details for vehicle ID: ${oDeliveryRow.vehicleID}`, textStatus, errorThrown);
-                          }
-                        });
-                      }
-                    });
+                      canProceed = false; // Set canProceed to false if validation fails
                   }
-                });
+              
+                  if (isRowValid) {
+                      try {
+                          // Format delivery date explicitly in local time zone
+                          var deliveryDate = new Date(oDeliveryRow.delDate);
+                          if (isNaN(deliveryDate)) {
+                              throw new Error(`Row ${index + 1}: Invalid date format.`);
+                          }
+              
+                          // Ensure date is interpreted in local time
+                          var formattedDate = [
+                              deliveryDate.getFullYear(),
+                              String(deliveryDate.getMonth() + 1).padStart(2, '0'),
+                              String(deliveryDate.getDate()).padStart(2, '0')
+                          ].join('-'); // YYYY-MM-DD
+              
+                          // Construct PATCH URL
+                          const baseUrlDelivery = 'https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
+                          var deliveryUrl = `${baseUrlDelivery}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToVehicle(vehicleID=${oDeliveryRow.vehicleID},IsActiveEntity=true)`;
+              
+                          // Log the payload being sent
+                          console.log(`Row ${index + 1}: Sending PATCH request with data:`, {
+                              delDate: formattedDate,
+                              deliveryLeadTime: oDeliveryRow.deliveryLeadTime,
+                              transportMode: oDeliveryRow.transportMode
+                          });
+                          
+              
+                          // Send PATCH request
+                          $.ajax({
+                              url: deliveryUrl,
+                              method: "PATCH",
+                              contentType: "application/json",
+                              data: JSON.stringify({
+                                  delDate: formattedDate,
+                                  deliveryLeadTime: oDeliveryRow.deliveryLeadTime,
+                                  transportMode: oDeliveryRow.transportMode
+                              }),
+                              success: function (oData) {
+                                  console.log(`Row ${index + 1}: Success - Delivery details updated`, oData);
+                                  // sap.m.MessageToast.show(`Row ${index + 1}: Delivery details updated successfully.`);
+                              },
+                              error: function (jqXHR, textStatus, errorThrown) {
+                                  console.error(`Row ${index + 1}: Error updating details`, textStatus, errorThrown);
+                                  // sap.m.MessageToast.show(`Row ${index + 1}: Update failed. Check console for details.`);
+                              }
+                          });
+              
+                      } catch (error) {
+                          console.error(error.message);
+                          sap.m.MessageToast.show(error.message);
+                      }
+                  }
+              });              
               }
 
               // Proceed only if all validations are passed
@@ -212,7 +171,7 @@ sap.ui.define(
                 var oData = oRootControl.getModel("context").getData();
                 var baseUrl = JSON.parse(oData.link);
                 var purchaseOrderId = baseUrl[0].purchaseOrderUuid.replace(/['"]/g, '');
-                const baseUrlComments = 'https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
+                const baseUrlComments = 'https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
                 var url = `${baseUrlComments}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToComments`;
 
                 $.ajax({
@@ -222,7 +181,8 @@ sap.ui.define(
                   data: JSON.stringify({
                     purchaseOrderUuid: purchaseOrderId,
                     commentsText: sCommentText,
-                    IsActiveEntity: true,
+                    user: 'M',
+                    IsActiveEntity: true
                   }),
                   success: function (oData) {
                     console.log("Comment Posted", oData);
@@ -244,44 +204,28 @@ sap.ui.define(
                   var oFormData = {};
                   var aFormContent = oForm.getContent();
                   aFormContent.forEach(function (oControl) {
-                    if (oControl instanceof sap.m.Input) {
+                    if (oControl instanceof sap.m.DatePicker) { // Capture only the DatePicker
                       var sControlId = oControl.getId();
-                      switch (sControlId) {
-                        case oRootControl.byId("bankName-input").getId():
-                          oFormData.bankName = oControl.getValue();
-                          break;
-                        case oRootControl.byId("accNumber-input").getId():
-                          oFormData.accNumber = oControl.getValue();
-                          break;
-                        case oRootControl.byId("ifscCode-input").getId():
-                          oFormData.ifscCode = oControl.getValue();
-                          break;
-                        case oRootControl.byId("branch-input").getId():
-                          oFormData.branch = oControl.getValue();
-                          break;
-                        case oRootControl.byId("accHoldersName-input").getId():
-                          oFormData.accHoldersName = oControl.getValue();
-                          break;
-                        case oRootControl.byId("dueDate-input").getId():
-                          oFormData.dueDate = oControl.getValue();
-                          break;
+                      if (sControlId === oRootControl.byId("dueDate-input").getId()) {
+                        oFormData.dueDate = oControl.getValue(); // Update only dueDate
                       }
                     }
                   });
 
-                  const baseUrlForm = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
+                  const baseUrlForm = "https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
                   var formUrl = `PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)`;
 
+                  // Perform the PATCH request with only the dueDate field
                   $.ajax({
                     url: baseUrlForm + formUrl,
                     method: "PATCH",
                     contentType: "application/json",
-                    data: JSON.stringify(oFormData),
+                    data: JSON.stringify(oFormData), // Contains only dueDate
                     success: function (oData) {
-                      console.log("Form Data Updated:", oData);
+                      console.log("Due Date Updated:", oData);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                      console.error("Error updating form data: " + textStatus + ' ' + errorThrown);
+                      console.error("Error updating due date: " + textStatus + ' ' + errorThrown);
                     }
                   });
                 }
@@ -381,3 +325,75 @@ sap.ui.define(
     );
   }
 );
+// oDeliveryData.forEach(function (oDeliveryRow, index) {
+                //   var rowPath = sPath + "/" + index;
+                //   oDeliveryRow = oModel.getProperty(rowPath); // Refresh row data
+
+                //   console.log(`Row ${index + 1} - Vehicle ID:`, oDeliveryRow.vehicleID);
+                //   console.log(`Row ${index + 1} - Delivery Date:`, oDeliveryRow.delDate);
+                //   console.log(`Row ${index + 1} - Delivery Lead Time:`, oDeliveryRow.deliveryLeadTime);
+                //   console.log(`Row ${index + 1} - Transport Mode:`, oDeliveryRow.shippingMethod);
+
+                //   var isRowValid = true;
+
+                //   // Validation
+                //   if (!oDeliveryRow.vehicleID) {
+                //     sap.m.MessageToast.show(`Row ${index + 1}: Vehicle ID is required.`);
+                //     isRowValid = false;
+                //   }
+                //   if (!oDeliveryRow.delDate) {
+                //     sap.m.MessageToast.show(`Row ${index + 1}: Delivery Date is required.`);
+                //     isRowValid = false;
+                //   }
+
+                //   // If any of the fields are missing, prevent proceeding
+                //   if (!isRowValid) {
+                //     canProceed = false; // Set canProceed to false if validation fails
+                //   }
+
+                //   if (isRowValid) {
+                //     try {
+                //       // Format delivery date
+                //       var deliveryDate = new Date(oDeliveryRow.delDate);
+                //       if (isNaN(deliveryDate)) {
+                //         throw new Error(`Row ${index + 1}: Invalid date format.`);
+                //       }
+                //       var formattedDate = deliveryDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+                //       // Construct PATCH URL
+                //       const baseUrlDelivery = 'https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/';
+                //       var deliveryUrl = `${baseUrlDelivery}PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToVehicle(vehicleID=${oDeliveryRow.vehicleID},IsActiveEntity=true)`;
+
+                //       // Log the payload being sent
+                //       console.log(`Row ${index + 1}: Sending PATCH request with data:`, {
+                //         delDate: formattedDate,
+                //         deliveryLeadTime: oDeliveryRow.deliveryLeadTime,
+                //         transportMode: oDeliveryRow.transportMode
+                //       });
+
+                //       // Send PATCH request
+                //       $.ajax({
+                //         url: deliveryUrl,
+                //         method: "PATCH",
+                //         contentType: "application/json",
+                //         data: JSON.stringify({
+                //           delDate: formattedDate,
+                //           deliveryLeadTime: oDeliveryRow.deliveryLeadTime,
+                //           transportMode: oDeliveryRow.transportMode
+                //         }),
+                //         success: function (oData) {
+                //           console.log(`Row ${index + 1}: Success - Delivery details updated`, oData);
+                //           sap.m.MessageToast.show(`Row ${index + 1}: Delivery details updated successfully.`);
+                //         },
+                //         error: function (jqXHR, textStatus, errorThrown) {
+                //           console.error(`Row ${index + 1}: Error updating details`, textStatus, errorThrown);
+                //           sap.m.MessageToast.show(`Row ${index + 1}: Update failed. Check console for details.`);
+                //         }
+                //       });
+
+                //     } catch (error) {
+                //       console.error(error.message);
+                //       sap.m.MessageToast.show(error.message);
+                //     }
+                //   }
+                // });

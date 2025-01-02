@@ -11,24 +11,19 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
         var oUploadSet = this.byId("uploadSet1");
         oUploadSet.setMode("None");
         this.initializeDatePickerMinDate();
-        this.initializeDatePickerMinDateForDueDate();// Access the UploadSet instance
-        // var oUploadSet = sap.ui.getCore().byId("uploadSet1");
-        
-        // // Access the toolbar of the UploadSet
-        // var oToolbar = oUploadSet.getToolbar();
-        
-        // // Find and remove the Upload button from the toolbar
-        // if (oToolbar) {
-        //     var aToolbarContent = oToolbar.getContent();
-        //     aToolbarContent.forEach(function (oControl) {
-        //         // Check for Upload button (usually a Button or control with specific role)
-        //         if (oControl.getText && oControl.getText() === "Upload") {
-        //             oToolbar.removeContent(oControl);
-        //         }
-        //     });
-        // }
-        
+        this.initializeDatePickerMinDateForDueDate();
+        // var oUploadSet = this.byId("uploadSet");
+        debugger
+        // Set the mode to 'None' to disable checkboxes
+        oUploadSet.setMode("None");
 
+        // Access the toolbar and modify its content
+        var oUploadButton = sap.ui.getCore().byId("__component1---App--uploadSet1-uploader-fu_button");
+        debugger
+        if (oUploadButton) {
+          oUploadButton.setVisible(false); // Hide the button
+        }
+        // this.initializeDatePickerMinDateForPrefferedDeliveryDate();// Access the UploadSet instance
       },
       // Handle scrolling behavior
       onScroll: function (oEvent) {
@@ -98,28 +93,32 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
 
       // AJAX Call for OData before rendering
       onBeforeRendering: function () {
-        // Third AJAX call for PDF files
-        var oView = this.getView();
-        var baseUrl = "https://f2dbf934trial-hanapri-uni-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/Files";
-        var url1 = "https://f2dbf934trial-hanapri-uni-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/"
         debugger
-        // Perform AJAX request to retrieve data
-        $.ajax({
-          url: baseUrl,
-          method: "GET",
-          success: function (oData) {
-            debugger
-            console.log("Files", oData);
-            var oModel = new JSONModel();
-            oModel.setData({ pdf: oData.value });
-            debugger
+        // Third AJAX call for PDF files
+        setTimeout(function () {
+          var oView = this.getView();
+          debugger
+          var oModel = new sap.ui.model.json.JSONModel();
+          debugger;
+          var oData = oView.oPropagatedProperties.oModels.context?.oData;
+
+          // var fileData = oData.Files;
+          if (oData.Files && Array.isArray(oData.Files)) {
+            const fileData = oData.Files;
+
+            console.log(fileData); // Check if fileData contains the expected array
+
+            // Set the full array to the model
+            oModel.setData({ pdf: fileData });
+
+            // Set the model to the view
             oView.setModel(oModel, "myFile");
 
-          },
-          error: function (jqXHR, textStatus, errorThrown) {
-            console.error("Error fetching data: " + textStatus + ' ' + errorThrown);
+            console.log("Model set successfully:", oModel.getData());
+          } else {
+            console.error("filelink is missing or not an array");
           }
-        });
+        }.bind(this), 1000);
         debugger
         setTimeout(async function () {
           debugger
@@ -149,27 +148,37 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
               console.error("Data is not in the expected array format.");
             }
 
-            // Second AJAX call for comment history data
-            var purchaseOrderId = baseUrl[0]?.purchaseOrderUuid.replace(/['"]/g, '');
-            if (purchaseOrderId) {
-              const baseUrlComments = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
-              const curl = baseUrlComments + `PurchaseOrder(purchaseOrderUuid=${purchaseOrderId},IsActiveEntity=true)/purchaseToComments?$orderby=createdAt asc`;
-
-              const commentsData = await $.ajax({ url: curl, method: "GET" });
-              var oModelComments = new sap.ui.model.json.JSONModel();
-              oModelComments.setData({ Comments: commentsData.value });
-              oView.setModel(oModelComments, "myComments");
-              console.log("Comments Data", commentsData);
-              // Scroll to the latest comment after data is set
+            try {
+              // Second AJAX call for comment history data
               debugger
-              oModelComments.attachEventOnce("change", function () {
+              var commentsData = JSON.parse(oData.commentLink);
+              debugger
+              if (commentsData) {
+                // const baseUrlComments = "https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
+                // const curl = baseUrlComments + `PurchaseOrder(purchaseOrderUuid = ${ purchaseOrderId }, IsActiveEntity = true) / purchaseToComments ? $orderby = createdAt asc`;
+
+                // const commentsData = await $.ajax({ url: curl, method: "GET" });
+
+                // Filter out comments that start with 10 digits
+                const filteredComments = commentsData.filter(comment => !/^\d{10}/.test(comment.commentsText));
                 debugger
-                this._scrollToLatestComment();
-            }.bind(this), 1000);            
-            } else {
-              console.warn("PurchaseOrderUuid not available in base URL data.");
+                var oModelComments = new sap.ui.model.json.JSONModel();
+                oModelComments.setData({ Comments: filteredComments });
+                debugger
+                oView.setModel(oModelComments, "myComments");
+                console.log("Filtered Comments Data", filteredComments);
+
+                // Scroll to the latest comment after data is set
+                oModelComments.attachEventOnce("change", function () {
+                  this._scrollToLatestComment();
+                }.bind(this), 1000);
+              } else {
+                console.warn("PurchaseOrderUuid not available in base URL data.");
+              }
+            } catch (error) {
+              console.error("Error during AJAX requests:", error);
             }
-            debugger
+
 
 
           } catch (error) {
@@ -177,114 +186,114 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
           }
         }.bind(this), 300);
 
-          //AJAX CALLS FOR SALES ORG, DOC TYPE, DIVISION AND DISTRIBUTION CHANNEL 
-          setTimeout(function () {
-            var oView = this.getView();
-            var oModel = new sap.ui.model.json.JSONModel();
-            debugger;
-            var oData = oView.oPropagatedProperties.oModels.context.oData;
-            var salesOrg = oData.salesOrg;
-        
-            var baseUrl1 = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
-            var filterUrl = baseUrl1 + `?$filter=sHId eq '${salesOrg}'`;
-        
-            $.ajax({
-              url: filterUrl,
-              method: "GET",
-              success: function (oData12) {
-                var descri = oData12.value[0].sHDescription;
-                oModel.setData({SalesOrgDescription:descri});
-                oView.setModel(oModel, "SalesModel");
-                debugger
-                console.log("SH Description:", descri);
-                console.log(oView);
-              },
-              error: function (jqXHR, textStatus, errorThrown) {
-                console.error("Error fetching data: " + textStatus + " " + errorThrown);
-              },
-            });
-          }.bind(this), 1000);
-      
-          setTimeout(function () {
-            var oView = this.getView();
-            var oModel = new sap.ui.model.json.JSONModel();
-            debugger;
-            var oData = oView.oPropagatedProperties.oModels.context.oData;
-            var districhannel = oData.distributionChannels;
-        
-            var baseUrl2 = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
-            var filterUrl1 = baseUrl2 + `?$filter=sHId eq '${districhannel}'`;
-        
-            $.ajax({
-              url: filterUrl1,
-              method: "GET",
-              success: function (oData13) {
-                var nutty = oData13.value[0].sHDescription;
-                oModel.setData({Distribution:nutty});
-                oView.setModel(oModel, "DistributionModel");
-                debugger
-                console.log("SH Description:", nutty);
-                console.log(oView);
-              },
-              error: function (jqXHR, textStatus, errorThrown) {
-                console.error("Error fetching data: " + textStatus + " " + errorThrown);
-              },
-            });
-          }.bind(this), 1000);
-      
-          setTimeout(function () {
-            var oView = this.getView();
-            var oModel = new sap.ui.model.json.JSONModel();
-            debugger;
-            var oData = oView.oPropagatedProperties.oModels.context.oData;
-            var divi = oData.division;
-        
-            var baseUrl3 = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
-            var filterUrl2 = baseUrl3 + `?$filter=sHId eq '${divi}'`;
-        
-            $.ajax({
-              url: filterUrl2,
-              method: "GET",
-              success: function (oData14) {
-                var diving = oData14.value[0].sHDescription;
-                oModel.setData({Divis:diving});
-                oView.setModel(oModel, "DivisionModel");
-                debugger
-                console.log("SH Description:", diving);
-                console.log(oView);
-              },
-              error: function (jqXHR, textStatus, errorThrown) {
-                console.error("Error fetching data: " + textStatus + " " + errorThrown);
-              },
-            });
-          }.bind(this), 1000);
-      
-          setTimeout(function () {
-            var oView = this.getView();
-            var oModel = new sap.ui.model.json.JSONModel();
-            debugger;
-            var oData = oView.oPropagatedProperties.oModels.context.oData;
-            var docu = oData.docType;
-        
-            var baseUrl4 = "https://5b8242e5trial-dev-04-mahindra-project-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
-            var filterUrl3 = baseUrl4 + `?$filter=sHId eq '${docu}'`;
-        
-            $.ajax({
-              url: filterUrl3,
-              method: "GET",
-              success: function (oData15) {
-                var doctype = oData15.value[0].sHDescription;
-                oModel.setData({Documentty:doctype});
-                oView.setModel(oModel, "DocumentModel");
-                debugger
-                console.log("SH Description:", doctype);
-                console.log(oView);
-              },
-              error: function (jqXHR, textStatus, errorThrown) {
-                console.error("Error fetching data: " + textStatus + " " + errorThrown);
-              },
-            });
-          }.bind(this), 1000);
+        //AJAX CALLS FOR SALES ORG, DOC TYPE, DIVISION AND DISTRIBUTION CHANNEL 
+        setTimeout(function () {
+          var oView = this.getView();
+          var oModel = new sap.ui.model.json.JSONModel();
+          debugger;
+          var oData = oView.oPropagatedProperties.oModels.context.oData;
+          var salesOrg = oData.salesOrg;
+
+          var baseUrl1 = "https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
+          var filterUrl = baseUrl1 + `? $filter = sHId eq '${salesOrg}'`;
+
+          $.ajax({
+            url: filterUrl,
+            method: "GET",
+            success: function (oData12) {
+              var descri = oData12.value[0].sHDescription;
+              oModel.setData({ SalesOrgDescription: descri });
+              oView.setModel(oModel, "SalesModel");
+              debugger
+              console.log("SH Description:", descri);
+              console.log(oView);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.error("Error fetching data: " + textStatus + " " + errorThrown);
+            },
+          });
+        }.bind(this), 1000);
+
+        setTimeout(function () {
+          var oView = this.getView();
+          var oModel = new sap.ui.model.json.JSONModel();
+          debugger;
+          var oData = oView.oPropagatedProperties.oModels.context.oData;
+          var districhannel = oData.distributionChannels;
+
+          var baseUrl2 = "https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
+          var filterUrl1 = baseUrl2 + `? $filter = sHId2 eq '${districhannel}' and sHField2 eq 'DistributionChannels'`;
+
+          $.ajax({
+            url: filterUrl1,
+            method: "GET",
+            success: function (oData13) {
+              var nutty = oData13.value[0].sHDescription2;
+              oModel.setData({ Distribution: nutty });
+              oView.setModel(oModel, "DistributionModel");
+              debugger
+              console.log("SH Description:", nutty);
+              console.log(oView);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.error("Error fetching data: " + textStatus + " " + errorThrown);
+            },
+          });
+        }.bind(this), 1000);
+
+        setTimeout(function () {
+          var oView = this.getView();
+          var oModel = new sap.ui.model.json.JSONModel();
+          debugger;
+          var oData = oView.oPropagatedProperties.oModels.context.oData;
+          var divi = oData.division;
+
+          var baseUrl3 = "https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
+          var filterUrl2 = baseUrl3 + `? $filter = sHId2 eq '${divi}' and sHField2 eq 'Division'`;
+
+          $.ajax({
+            url: filterUrl2,
+            method: "GET",
+            success: function (oData14) {
+              var diving = oData14.value[0].sHDescription2;
+              oModel.setData({ Divis: diving });
+              oView.setModel(oModel, "DivisionModel");
+              debugger
+              console.log("SH Description:", diving);
+              console.log(oView);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.error("Error fetching data: " + textStatus + " " + errorThrown);
+            },
+          });
+        }.bind(this), 1000);
+
+        setTimeout(function () {
+          var oView = this.getView();
+          var oModel = new sap.ui.model.json.JSONModel();
+          debugger;
+          var oData = oView.oPropagatedProperties.oModels.context.oData;
+          var docu = oData.docType;
+
+          var baseUrl4 = "https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/SH";
+          var filterUrl3 = baseUrl4 + `? $filter = sHId eq '${docu}'`;
+
+          $.ajax({
+            url: filterUrl3,
+            method: "GET",
+            success: function (oData15) {
+              var doctype = oData15.value[0].sHDescription;
+              oModel.setData({ Documentty: doctype });
+              oView.setModel(oModel, "DocumentModel");
+              debugger
+              console.log("SH Description:", doctype);
+              console.log(oView);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              console.error("Error fetching data: " + textStatus + " " + errorThrown);
+            },
+          });
+        }.bind(this), 1000);
 
 
 
@@ -292,10 +301,10 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
 
       onOpenPressed: function (oEvent) {
         debugger
-        var baseUrl = "https://f2dbf934trial-hanapri-uni-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
+        var baseUrl = "https://44f10b5ftrial-dev1-mahindra-sales-srv.cfapps.us10-001.hana.ondemand.com/odata/v4/my/";
         debugger
         let fileurl = oEvent.getSource().getUrl();
-        var pattern = /Files.*$/;
+        var pattern = /EnquiryFiles.*$/;
         var match = fileurl.match(pattern);
         if (match) {
           var entityUrl = baseUrl + match[0];
@@ -309,41 +318,122 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
         debugger;
         var oView = this.getView();
 
-        // Get POReleaseDate dynamically from the model data
-        var oData = oView.oPropagatedProperties.oModels.context.oData;
-        var poReleaseDate = new Date(oData.POReleaseDate); // Use POReleaseDate as the order date
-
+        // Fetch the delivery details table to get delivery dates
         var oTable = oView.byId("delivery-details-table");
+        var earliestDeliveryDate = null;
 
         if (oTable) {
           var oModel = oTable.getModel("myModel");
           var sPath = "/Files"; // Path to the delivery data in the model
           var oDeliveryData = oModel.getProperty(sPath);
 
-          // Loop through each delivery entry
-          oDeliveryData.forEach(function (oDeliveryRow, index) {
-            // Fetch the delivery date from the data
-            var deliveryDateString = oDeliveryRow.deliveryDate;
-            var deliveryDate = deliveryDateString ? new Date(deliveryDateString) : null;
+          console.log("Delivery Data Retrieved:", oDeliveryData);
+          debugger;
 
-            if (deliveryDate && !isNaN(deliveryDate.getTime())) {
-              // Calculate the difference in days between delivery date and POReleaseDate
-              var timeDiff = Math.abs(deliveryDate.getTime() - poReleaseDate.getTime());
-              var deliveryLeadTime = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Lead time in days
-
-              // Create a formatted lead time with ' days' suffix for model update
-              var formattedLeadTime = deliveryLeadTime + " days";
-
-              // Update the deliveryLeadTime in the model immediately with formatted value
-              var rowPath = sPath + "/" + index + "/deliveryLeadTime";
-              oModel.setProperty(rowPath, formattedLeadTime); // Update the model with formatted lead time
-              console.log("Updated delivery lead time for vehicle ID:", oDeliveryRow.vehicleID, "Lead Time:", formattedLeadTime);
-            } else {
-              console.error("Invalid or missing delivery date for vehicle ID: " + oDeliveryRow.vehicleID);
+          // Parse if the data is a JSON string
+          if (typeof oDeliveryData === "string") {
+            try {
+              oDeliveryData = JSON.parse(oDeliveryData);
+              console.log("Parsed oDeliveryData:", oDeliveryData);
+            } catch (error) {
+              console.error("Failed to parse oDeliveryData:", error);
+              return; // Exit the function as the data is invalid
             }
-          });
+          }
+
+          // Ensure the data is an array
+          if (oDeliveryData && Array.isArray(oDeliveryData)) {
+            // Get POReleaseDate dynamically from the model data
+            var oData = oView.oPropagatedProperties.oModels.context.oData;
+            var poReleaseDate = new Date(oData.POReleaseDate); // Use POReleaseDate as the order date
+
+            // Iterate over the delivery data to process each row
+            oDeliveryData.forEach(function (oDeliveryRow, index) {
+              console.log(`Row ${index + 1} Data:`, oDeliveryRow);
+
+              // Calculate deliveryLeadTime
+              if (oDeliveryRow.delDate) {
+                var deliveryDate = new Date(oDeliveryRow.delDate);
+                console.log(`Row ${index + 1} Delivery Date Parsed:`, deliveryDate);
+
+                deliveryDate.setHours(0, 0, 0, 0); // Normalize to midnight for consistency
+
+                // Update earliestDeliveryDate if this deliveryDate is earlier
+                if (!earliestDeliveryDate || deliveryDate < earliestDeliveryDate) {
+                  earliestDeliveryDate = deliveryDate;
+                }
+
+                // Calculate the lead time based on POReleaseDate
+                var timeDiff = Math.abs(deliveryDate.getTime() - poReleaseDate.getTime());
+                var deliveryLeadTime = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Lead time in days
+                var formattedLeadTime = deliveryLeadTime + " days";
+
+                // Update the deliveryLeadTime in the model
+                var rowPath = sPath + "/" + index + "/deliveryLeadTime";
+                oModel.setProperty(rowPath, formattedLeadTime);
+                console.log("Updated delivery lead time for vehicle ID:", oDeliveryRow.vehicleID, "Lead Time:", formattedLeadTime);
+
+              } else {
+                console.warn(`Row ${index + 1} has no valid delivery date.`);
+              }
+            });
+
+            console.log("Earliest Delivery Date Found:", earliestDeliveryDate);
+          } else {
+            console.warn("No delivery data found or delivery data is not an array.");
+          }
+        } else {
+          console.warn("Delivery details table not found.");
+        }
+
+        // Additional logic for setting the Due Date DatePicker
+        var oDatePicker = oView.byId("dueDate-input");
+        debugger;
+        if (oDatePicker) {
+          // If no delivery date is found, set the minimum date to today's date
+          var currentDate = new Date();
+          currentDate.setHours(0, 0, 0, 0);
+
+          // Calculate the max due date: one day before the earliest delivery date
+          var maxDueDate = earliestDeliveryDate
+            ? new Date(earliestDeliveryDate.getTime() - 24 * 60 * 60 * 1000)
+            : null; // Subtract one day (in milliseconds)
+
+          // Ensure minDueDate is today's date
+          var minDueDate = currentDate;
+
+          if (maxDueDate && maxDueDate < minDueDate) {
+            console.warn("Invalid range: maxDueDate is earlier than minDueDate. Adjusting to today's date.");
+            maxDueDate = minDueDate;
+          }
+
+          // Set the min and max dates on the Due Date DatePicker
+          oDatePicker.setMinDate(minDueDate);
+          if (maxDueDate) {
+            oDatePicker.setMaxDate(maxDueDate);
+          }
+
+          // Retrieve the current dateValue of the DatePicker
+          var dateValue = oDatePicker.getDateValue();
+          if (dateValue && (dateValue < minDueDate || (maxDueDate && dateValue > maxDueDate))) {
+            // Adjust the due date if it falls outside the allowed range
+            var adjustedDate = dateValue < minDueDate ? minDueDate : maxDueDate;
+            oDatePicker.setDateValue(adjustedDate);
+            console.warn("Adjusted invalid due dateValue to:", adjustedDate);
+          }
+
+          console.log("Due Date Picker constraints set:");
+          console.log(" - Minimum date:", minDueDate);
+          console.log(" - Maximum date:", maxDueDate);
+        } else {
+          console.warn("Due Date DatePicker control not found.");
         }
       },
+
+
+
+
+
 
 
 
@@ -377,44 +467,159 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
         //   console.warn("DatePicker or POReleaseDate not available during onAfterRendering");
         // }
       },
+
+
+
       initializeDatePickerMinDate: function () {
-        setTimeout(function () {
-          var oView = this.getView();
+        var oView = this.getView();
 
-          // Get the current date and set it to midnight to avoid time issues
-          var currentDate = new Date();
-          currentDate.setHours(0, 0, 0, 0); // Midnight ensures no overlap with past times
-          console.log("Current Date:", currentDate);
+        // Get the current date and set it to midnight to avoid time issues
+        var currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); // Midnight ensures no overlap with past times
+        console.log("Current Date:", currentDate);
 
-          // Access the DatePicker control and set the minimum date to today
-          var oDatePicker = oView.byId("_IDGenDatePicker");
-          if (oDatePicker) {
-            oDatePicker.setMinDate(currentDate); // Setting minDate ensures past dates are not selectable
-            console.log("Minimum date set on DatePicker to:", currentDate);
-          } else {
-            console.warn("DatePicker control not found");
+        // Access the DatePicker control and set the minimum date to today
+        var oDatePicker = oView.byId("_IDGenDatePicker");
+        if (oDatePicker) {
+          oDatePicker.setMinDate(currentDate); // Setting minDate ensures past dates are not selectable
+          console.log("Minimum date set on DatePicker to:", currentDate);
+
+          // Validate and adjust the current dateValue if necessary
+          var dateValue = oDatePicker.getDateValue();
+          if (dateValue && dateValue < currentDate) {
+            oDatePicker.setDateValue(currentDate); // Adjust invalid dateValue
+            console.warn("Adjusted invalid dateValue to:", currentDate);
           }
-        }.bind(this), 500); // Delay execution by 500ms to ensure the control is fully loaded
+        } else {
+          console.warn("DatePicker control not found");
+        }
+      },
+
+      initializeDatePickerMinDateForDueDate: function () {
+        debugger;
+        var oView = this.getView();
+
+        // Fetch the delivery details table to get delivery dates
+        var oTable = oView.byId("delivery-details-table");
+        var earliestDeliveryDate = null;
+
+        if (oTable) {
+          var oData = oView.oPropagatedProperties.oModels.context.oData;
+          var oDeliveryData = oData.link;
+
+          console.log("Delivery Data Retrieved:", oDeliveryData);
+          debugger
+          // Parse if the data is a JSON string
+          if (typeof oDeliveryData === "string") {
+            try {
+              oDeliveryData = JSON.parse(oDeliveryData);
+              console.log("Parsed oDeliveryData:", oDeliveryData);
+            } catch (error) {
+              console.error("Failed to parse oDeliveryData:", error);
+              return; // Exit the function as the data is invalid
+            }
+          }
+
+          // Ensure the data is an array
+          if (oDeliveryData && Array.isArray(oDeliveryData)) {
+            // Iterate over the delivery data to find the earliest delivery date
+            oDeliveryData.forEach(function (oDeliveryRow, index) {
+              console.log(`Row ${index + 1} Data:`, oDeliveryRow);
+
+              if (oDeliveryRow.delDate) {
+                debugger;
+                var deliveryDate = new Date(oDeliveryRow.delDate);
+                console.log(`Row ${index + 1} Delivery Date Parsed:`, deliveryDate);
+
+                deliveryDate.setHours(0, 0, 0, 0); // Normalize to midnight for consistency
+
+                // Update earliestDeliveryDate if this deliveryDate is earlier
+                if (!earliestDeliveryDate || deliveryDate < earliestDeliveryDate) {
+                  earliestDeliveryDate = deliveryDate;
+                }
+              } else {
+                console.warn(`Row ${index + 1} has no valid delivery date.`);
+              }
+            });
+
+            console.log("Earliest Delivery Date Found:", earliestDeliveryDate);
+          } else {
+            console.warn("No delivery data found or delivery data is not an array.");
+          }
+        } else {
+          console.warn("Delivery details table not found.");
+        }
+
+        // Additional logic for setting the Due Date DatePicker..    
+
+        // Access the Due Date DatePicker control
+        var oDatePicker = oView.byId("dueDate-input");
+        debugger
+        if (oDatePicker) {
+          // If no delivery date is found, set the minimum date to today's date
+          var currentDate = new Date();
+          currentDate.setHours(0, 0, 0, 0);
+
+          // Calculate the max due date: one day before the earliest delivery date
+          var maxDueDate = earliestDeliveryDate
+            ? new Date(earliestDeliveryDate.getTime() - 24 * 60 * 60 * 1000)
+            : null; // Subtract one day (in milliseconds)
+
+          // Ensure minDueDate is today's date
+          var minDueDate = currentDate;
+
+          if (maxDueDate && maxDueDate < minDueDate) {
+            console.warn("Invalid range: maxDueDate is earlier than minDueDate. Adjusting to today's date.");
+            maxDueDate = minDueDate;
+          }
+
+          // Set the min and max dates on the Due Date DatePicker
+          oDatePicker.setMinDate(minDueDate);
+          if (maxDueDate) {
+            oDatePicker.setMaxDate(maxDueDate);
+          }
+
+          // Retrieve the current dateValue of the DatePicker
+          var dateValue = oDatePicker.getDateValue();
+          if (dateValue && (dateValue < minDueDate || (maxDueDate && dateValue > maxDueDate))) {
+            // Adjust the due date if it falls outside the allowed range
+            var adjustedDate = dateValue < minDueDate ? minDueDate : maxDueDate;
+            oDatePicker.setDateValue(adjustedDate);
+            console.warn("Adjusted invalid due dateValue to:", adjustedDate);
+          }
+
+          console.log("Due Date Picker constraints set:");
+          console.log(" - Minimum date:", minDueDate);
+          console.log(" - Maximum date:", maxDueDate);
+        } else {
+          console.warn("Due Date DatePicker control not found.");
+        }
       },
 
 
-      initializeDatePickerMinDateForDueDate: function () {
-        setTimeout(function () {
-          var oView = this.getView();
-          // Get the current date
-          var currentDate = new Date();
-          currentDate.setHours(0, 0, 0, 0); // Set the time to midnight to avoid time issues
-          console.log("Current Date:", currentDate);
+      initializeDatePickerMinDateForPrefferedDeliveryDate: function () {
+        var oView = this.getView();
+        // Get the current date
+        var currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); // Set the time to midnight to avoid time issues
+        console.log("Current Date:", currentDate);
 
-          // Access the DatePicker control and set the minimum date to today
-          var oDatePicker = oView.byId("dueDate-input");
-          if (oDatePicker) {
-            oDatePicker.setMinDate(currentDate);
-            console.log("Minimum date set on DatePicker to:", currentDate);
-          } else {
-            console.warn("DatePicker control not found");
+        // Access the DatePicker control and set the minimum date to today
+        var oDatePicker = oView.byId("_IDGenDatePicker1");
+        if (oDatePicker) {
+          oDatePicker.setMinDate(currentDate);
+
+          // Validate and adjust the current dateValue if necessary
+          var dateValue = oDatePicker.getDateValue();
+          if (dateValue && dateValue < currentDate) {
+            oDatePicker.setDateValue(currentDate); // Adjust invalid dateValue
+            console.warn("Adjusted invalid dateValue to:", currentDate);
           }
-        }.bind(this), 500); // Delay execution by 500ms
+
+          console.log("Minimum date set on DatePicker to:", currentDate);
+        } else {
+          console.warn("DatePicker control not found");
+        }
       },
 
       checkAndUpdateDiv: function () {
@@ -449,7 +654,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
             name: "workflowmanagement.workflowuimodule.view.CommentHistoryDialog"
           }).then(function (oDialog) {
             oDialog.open();
-            this._attachClickOutsideListener(oDialog); 
+            this._attachClickOutsideListener(oDialog);
 
             // Ensure the Timeline scrolls to the bottom after the dialog is loaded
             this._scrollToLatestComment();
@@ -471,21 +676,21 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
         var oDomRef = oScrollContainer.getDomRef();
         debugger
         var height = oDomRef.scrollHeight;
-        
+
         debugger
-    
+
         if (oDomRef) {
           oScrollContainer.scrollTo(0, height, 0);
-            // Delay ensures rendering is complete before scrolling
-            // setTimeout(function () {
-            //     oDomRef.scrollTop = oDomRef.scrollHeight; // Scroll to the bottom
-            // },300); // Adjust delay time if necessary
+          // Delay ensures rendering is complete before scrolling
+          // setTimeout(function () {
+          //     oDomRef.scrollTop = oDomRef.scrollHeight; // Scroll to the bottom
+          // },300); // Adjust delay time if necessary
         }
-    },    
-    onDialogOpen: function() {
-      debugger
-      this._scrollToLatestComment();
-  },       
+      },
+      onDialogOpen: function () {
+        debugger
+        this._scrollToLatestComment();
+      },
 
 
       // onCloseHistoryDialog: function () {
@@ -557,7 +762,7 @@ sap.ui.define(["sap/ui/core/mvc/Controller", "sap/ui/model/json/JSONModel"], fun
         oPromise.resolve();
       },
 
-      
+
     }
   );
 });

@@ -178,8 +178,7 @@
           "TotalPrice",
           "TaxAmount",
           "GrandTotal", 
-          "POReleaseDate",
-          "ProfileIcon"
+          "POReleaseDate"
         ],
         "properties": {
           "CustomerID": {
@@ -383,10 +382,10 @@
             "title": "Purchase Order Release Date",
             "description": "Order Date Of Vehicle"
           },
-          "ProfileIcon": {
-            "type": "string",
-            "title": "Icon Link",
-            "description": "Icon Link"
+          "Files": {
+            "type": "array",
+            "title": "Files ",
+            "description": "Files Link"
           }
         }
       },      

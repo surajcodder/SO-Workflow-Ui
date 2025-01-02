@@ -45,7 +45,7 @@
                                 <form:content>
                                     <m:Label
                                         id="companyName-label"
-                                        text="Company Names"
+                                        text="Company Name"
                                     />
                                     <m:Text
                                         id="companyName-text"
@@ -221,27 +221,21 @@
                                         text="{context>/dealerCode}"
                                     />
                                     <m:Label
-                                        id="_IDGenLabel190"
-                                        text="Delivery Location"
-                                    />
-                                    <m:Text
-                                        id="_IDGenText90"
-                                        text="{context>/deliveryLocation}"
-                                    />
-                                    <m:Label
                                         id="_IDGenLabel191"
                                         text="Distribution Channel"
                                     />
                                     <m:Text
                                         id="_IDGenText91"
-                                        text="{= ${context>/distributionChannels} + ' (' + (${DistributionModel>/Distribution}) + ')' }" />
+                                        text="{context>/distributionChannels}"
+                                    />
                                     <m:Label
                                         id="_IDGenLabel22345"
                                         text="Division"
                                     />
                                     <m:Text
                                         id="_IDGenText22345"
-                                        text="{= ${context>/division} + ' (' + (${DivisionModel>/Divis}) + ')' }" />
+                                        text="{context>/division}"
+                                    />
                                     <m:Label
                                         id="_IDGenLabel20"
                                         text="Quotation ID"
@@ -256,22 +250,24 @@
                                     />
                                     <m:Text
                                         id="_IDGenText125"
-                                         text="{= ${context>/docType} + ' (' + (${DocumentModel>/Documentty}) + ')' }" />
+                                        text="{context>/docType}"
+                                    />
                                     <m:Label
                                         id="_IDGenLabel212"
                                         text="Sales Organization"
                                     />
                                     <m:Text
                                         id="_IDGenText152"
-                                        text="{= ${context>/salesOrg} + ' (' + (${SalesModel>/SalesOrgDescription}) + ')' }" />
-                                    <m:Label
+                                        text="{context>/salesOrg}"
+                                    />
+                                    <!-- <m:Label
                                         id="_IDGenLabel21"
                                         text="Status"
                                     />
                                     <m:Text
                                         id="_IDGenText15"
                                         text="{context>/Status}"
-                                    />
+                                    /> -->
                                 </form:content>
                             </form:SimpleForm>
                         </ObjectPageSubSection>
@@ -310,7 +306,7 @@
                                         rowHeight="50%"
                                         selectionMode="None"
                                         visibleRowCount="{= Math.max(1, ${myModel>/Files}.length)}"
-                                        >
+                                    >
                                         <ui:columns>
                                             <ui:Column
                                                 id="_IDGenColumn"
@@ -347,23 +343,6 @@
                                                 </ui:template>
                                             </ui:Column>
                                             <ui:Column
-                                                id="_IDGenColumn2"
-                                                width="100px"
-                                                hAlign="Center"
-                                            >
-                                                <m:Label
-                                                    id="_IDGenLabel2"
-                                                    text="Quantity"
-                                                />
-                                                <ui:template>
-                                                    <m:Text
-                                                        id="_IDGenText3"
-                                                        text="{myModel>quantity}"
-                                                        textAlign="Center"
-                                                    />
-                                                </ui:template>
-                                            </ui:Column>
-                                            <ui:Column
                                                 id="_IDGenColumn3"
                                                 width="150px"
                                                 hAlign="Center"
@@ -381,103 +360,18 @@
                                                 </ui:template>
                                             </ui:Column>
                                             <ui:Column
-                                                id="_IDGenColumn4"
-                                                width="150px"
-                                                hAlign="Center"
-                                            >
-                                                <m:Label
-                                                    id="_IDGenLabel4"
-                                                    text="Band"
-                                                />
-                                                <ui:template>
-                                                    <m:Text
-                                                        id="_IDGenText5"
-                                                        text="{myModel>band}"
-                                                        textAlign="Center"
-                                                    />
-                                                </ui:template>
-                                            </ui:Column>
-                                            <ui:Column
-                                                id="_IDGenColumn5"
-                                                width="150px"
-                                                hAlign="Center"
-                                            >
-                                                <m:Label
-                                                    id="_IDGenLabel5"
-                                                    text="Price Per Unit"
-                                                />
-                                                <ui:template>
-                                                    <m:Text
-                                                        id="_IDGenText6"
-                                                        text="{myModel>pricePerUnit}"
-                                                        textAlign="Center"
-                                                    />
-                                                </ui:template>
-                                            </ui:Column>
-                                            <ui:Column
-                                                id="_IDGenColumn6"
+                                                id="_IDGenColumn2"
                                                 width="100px"
                                                 hAlign="Center"
                                             >
                                                 <m:Label
-                                                    id="_IDGenLabel6"
-                                                    text="Tax (%)"
+                                                    id="_IDGenLabel2"
+                                                    text="Quantity"
                                                 />
                                                 <ui:template>
                                                     <m:Text
-                                                        id="_IDGenText7"
-                                                        text="{myModel>taxPercentage}"
-                                                        textAlign="Center"
-                                                    />
-                                                </ui:template>
-                                            </ui:Column>
-                                            <ui:Column
-                                                id="_IDGenColumn7"
-                                                width="150px"
-                                                hAlign="Center"
-                                            >
-                                                <m:Label
-                                                    id="_IDGenLabel7"
-                                                    text="Discount (%)"
-                                                />
-                                                <ui:template>
-                                                    <m:Text
-                                                        id="_IDGenText8"
-                                                        text="{myModel>discount}"
-                                                        textAlign="Center"
-                                                    />
-                                                </ui:template>
-                                            </ui:Column>
-                                            <ui:Column
-                                                id="_IDGenColumn8"
-                                                width="150px"
-                                                hAlign="Center"
-                                            >
-                                                <m:Label
-                                                    id="_IDGenLabel8"
-                                                    text="Discounted Price"
-                                                />
-                                                <ui:template>
-                                                    <m:Text
-                                                        id="_IDGenText9"
-                                                        text="{myModel>discountedPrice}"
-                                                        textAlign="Center"
-                                                    />
-                                                </ui:template>
-                                            </ui:Column>
-                                            <ui:Column
-                                                id="_IDGenColumn9"
-                                                width="150px"
-                                                hAlign="Center"
-                                            >
-                                                <m:Label
-                                                    id="_IDGenLabel9"
-                                                    text="Total Price"
-                                                />
-                                                <ui:template>
-                                                    <m:Text
-                                                        id="_IDGenText10"
-                                                        text="{myModel>totalPrice}"
+                                                        id="_IDGenText3"
+                                                        text="{myModel>quantity}"
                                                         textAlign="Center"
                                                     />
                                                 </ui:template>
@@ -512,6 +406,126 @@
                                                     <m:Text
                                                         id="_IDGenText101"
                                                         text="{myModel>partnerNumber}"
+                                                        textAlign="Center"
+                                                    />
+                                                </ui:template>
+                                            </ui:Column>
+                                            <ui:Column
+                                                id="_IDGenColumn5"
+                                                width="150px"
+                                                hAlign="Center"
+                                            >
+                                                <m:Label
+                                                    id="_IDGenLabel5"
+                                                    text="Price Per Unit"
+                                                />
+                                                <ui:template>
+                                                    <m:Text
+                                                        id="_IDGenText6"
+                                                        text="{myModel>pricePerUnit}"
+                                                        textAlign="Center"
+                                                    />
+                                                </ui:template>
+                                            </ui:Column>
+                                            <ui:Column
+                                                id="_IDGenColumn41"
+                                                width="150px"
+                                                hAlign="Center"
+                                            >
+                                                <m:Label
+                                                    id="_IDGenLabel41"
+                                                    text="Actual Price"
+                                                />
+                                                <ui:template>
+                                                    <m:Text
+                                                        id="_IDGenText511"
+                                                        text="{myModel>actualPrice}"
+                                                        textAlign="Center"
+                                                    />
+                                                </ui:template>
+                                            </ui:Column>
+                                            <ui:Column
+                                                id="_IDGenColumn4"
+                                                width="150px"
+                                                hAlign="Center"
+                                            >
+                                                <m:Label
+                                                    id="_IDGenLabel4"
+                                                    text="Band Applied"
+                                                />
+                                                <ui:template>
+                                                    <m:Text
+                                                        id="_IDGenText5"
+                                                        text="{myModel>band}"
+                                                        textAlign="Center"
+                                                    />
+                                                </ui:template>
+                                            </ui:Column>
+
+                                            <ui:Column
+                                                id="_IDGenColumn7"
+                                                width="150px"
+                                                hAlign="Center"
+                                            >
+                                                <m:Label
+                                                    id="_IDGenLabel7"
+                                                    text="Discount(%)/Price"
+                                                />
+                                                <ui:template>
+                                                    <m:Text
+                                                        id="_IDGenText8"
+                                                        text="{myModel>discount}"
+                                                        textAlign="Center"
+                                                    />
+                                                </ui:template>
+                                            </ui:Column>
+                                            <ui:Column
+                                                id="_IDGenColumn8"
+                                                width="150px"
+                                                hAlign="Center"
+                                            >
+                                                <m:Label
+                                                    id="_IDGenLabel8"
+                                                    text="Discounted Price"
+                                                />
+                                                <ui:template>
+                                                    <m:Text
+                                                        id="_IDGenText9"
+                                                        text="{myModel>discountedPrice}"
+                                                        textAlign="Center"
+                                                    />
+                                                </ui:template>
+                                            </ui:Column>
+                                            <ui:Column
+                                                id="_IDGenColumn6"
+                                                width="100px"
+                                                hAlign="Center"
+                                            >
+                                                <m:Label
+                                                    id="_IDGenLabel6"
+                                                    text="Tax (%)"
+                                                />
+                                                <ui:template>
+                                                    <m:Text
+                                                        id="_IDGenText7"
+                                                        text="{myModel>taxPercentage}"
+                                                        textAlign="Center"
+                                                    />
+                                                </ui:template>
+                                            </ui:Column>
+                                            <ui:Column
+                                                id="_IDGenColumn9"
+                                                width="150px"
+                                                hAlign="Center"
+                                            >
+                                                <m:Label
+                                                    id="_IDGenLabel9"
+                                                    text="Total Price"
+                                                />
+                                                <ui:template>
+                                                    <m:Text
+                                                        id="_IDGenText10"
+                                                        text="{myModel>totalPrice}"
                                                         textAlign="Center"
                                                     />
                                                 </ui:template>
@@ -598,7 +612,7 @@
                                     rowHeight="50%"
                                     selectionMode="None"
                                     visibleRowCount="{= Math.max(1, ${myModel>/Files}.length)}"
-                                    >
+                                >
                                     <ui:columns>
                                         <ui:Column
                                             id="_IDGenColumn17"
@@ -648,7 +662,7 @@
                                             <ui:template>
                                                 <m:DatePicker
                                                     id="_IDGenDatePicker"
-                                                    value="{myModel>deliveryDate}"
+                                                    value="{myModel>delDate}"
                                                     textAlign="Center"
                                                     width="100%"
                                                     change="onDataChange"
@@ -663,12 +677,12 @@
                                         >
                                             <m:Label
                                                 id="_IDGenLabel12"
-                                                text="Shipping Method"
+                                                text="Transport Mode"
                                             />
                                             <ui:template>
                                                 <m:Select
                                                     id="_IDGenSelect"
-                                                    selectedKey="{myModel>shippingMethod}"
+                                                    selectedKey="{myModel>transportMode}"
                                                     width="100%"
                                                 >
                                                     <m:items>
@@ -694,20 +708,42 @@
                                         </ui:Column>
 
                                         <ui:Column
-                                            id="_IDGenColumn13"
-                                            width="150px"
+                                            id="_IDGenColumn111"
+                                            width="170px"
                                             hAlign="Center"
                                         >
                                             <m:Label
-                                                id="_IDGenLabel13"
-                                                text="Shipping Charges"
+                                                id="_IDGenLabel111"
+                                                text="Preferred Delivery Date"
+                                            />
+                                            <ui:template>
+                                                <m:DatePicker
+                                                    id="_IDGenDatePicker1"
+                                                    value="{myModel>preferredDelDate}"
+                                                    textAlign="Center"
+                                                    width="100%"
+                                                    change="onDataChange"
+                                                    displayFormat="yyyy-MM-dd"
+                                                    editable="false"
+                                                />
+                                            </ui:template>
+                                        </ui:Column>
+                                        <ui:Column
+                                            id="_IDGenColumn101"
+                                            width="190px"
+                                            hAlign="Center"
+                                        >
+                                            <m:Label
+                                                id="_IDGenLabel110"
+                                                text="Preferred Delivery Location"
                                             />
                                             <ui:template>
                                                 <m:Input
-                                                    id="_IDGenInput3"
-                                                    value="{myModel>shippingCharges}"
+                                                    id="_IDGenInput11"
+                                                    value="{myModel>preferredDelLocation}"
                                                     textAlign="Center"
                                                     width="100%"
+                                                    editable="false"
                                                 />
                                             </ui:template>
                                         </ui:Column>
@@ -741,41 +777,41 @@
                                         id="bankName-label"
                                         text="Bank Name"
                                     />
-                                    <m:Input
-                                        id="bankName-input"
-                                        value="{context>/bankName}"
+                                    <m:Text
+                                        id="bankName-text"
+                                        text="{context>/bankName}"
                                     />
                                     <m:Label
                                         id="accNumber-label"
                                         text="Account Number"
                                     />
-                                    <m:Input
-                                        id="accNumber-input"
-                                        value="{context>/accNumber}"
+                                    <m:Text
+                                        id="accNumber-text"
+                                        text="{context>/accNumber}"
                                     />
                                     <m:Label
                                         id="ifscCode-label"
                                         text="IFSC Code"
                                     />
-                                    <m:Input
-                                        id="ifscCode-input"
-                                        value="{context>/ifscCode}"
+                                    <m:Text
+                                        id="ifscCode-text"
+                                        text="{context>/ifscCode}"
                                     />
                                     <m:Label
                                         id="branch-label"
                                         text="Branch"
                                     />
-                                    <m:Input
-                                        id="branch-input"
-                                        value="{context>/branch}"
+                                    <m:Text
+                                        id="branch-text"
+                                        text="{context>/branch}"
                                     />
                                     <m:Label
                                         id="accHoldersName-label"
                                         text="Account Holder's Name"
                                     />
-                                    <m:Input
-                                        id="accHoldersName-input"
-                                        value="{context>/accHoldersName}"
+                                    <m:Text
+                                        id="accHoldersName-text"
+                                        text="{context>/accHoldersName}"
                                     />
                                     <m:Label
                                         id="dueDate-label"
@@ -811,7 +847,6 @@
                                 uploadEnabled="false"
                                 items="{myFile>/pdf}"
                             >
-
                                 <upload:items>
                                     <upload:UploadSetItem
                                         id="uploadSetItem1"
@@ -819,7 +854,6 @@
                                         mediaType="{myFile>mediaType}"
                                         url="{myFile>url}"
                                         enabledEdit="false"
-                                        enabledRemove="false"
                                         visibleEdit="false"
                                         visibleRemove="false"
                                         openPressed="onOpenPressed"
@@ -890,43 +924,77 @@
         </ObjectPageLayout>
     </m:App>
     <m:Dialog
-    id="commentHistoryDialog"
-    title="Comment History"
-    stretch="false"
-    contentWidth="50%"
-    contentHeight="400px"
-    afterOpen="onDialogOpen"
+        id="commentHistoryDialog"
+        title="Comment History"
+        stretch="false"
+        contentWidth="50%"
+        contentHeight="400px"
+        afterOpen="onDialogOpen"
     >
-    <m:customHeader>
-        <m:Toolbar id="_IDGenToolbar1">
-            <m:Title id="_IDGenTitle" text="Comment History" />
-            <m:ToolbarSpacer id="_IDGenToolbarSpacer" />
-            <m:Button id="_IDGenButton" text="Close" press="onCloseHistoryDialog" />
-        </m:Toolbar>
-    </m:customHeader>
-    <m:ScrollContainer
-    id="scrollContainer"
-    width="100%"
-    height="400px" 
-    vertical="true"
->
-    <m:VBox
-        id="commentContainer"
-        width="100%"
-        class="comment-box"
-    >
-    <m:List id="chatList"  items="{path : 'myComments>/Comments', parameters: {$orderby: 'createdAt desc'}, filters: [{ path: 'customerId', operator: 'EQ', value1: null } ]}" class="chatList" >
-        <m:CustomListItem id="_IDGenCustomListItem1" class="items">
-                <m:HBox id="_IDGenHBox11" justifyContent="{= ${myComments>user} === 'Customer' ? 'Start' : 'End'}" alignItems="{= ${myComments>user} === 'Customer' ? 'Start' : 'End'}" class ="messageContainer">
-                    <m:VBox id="_IDGenVBox5" class="messageHeader">
-                        <m:Text id="_IDGenText51" text="{myComments>user}" class="messageTime" />
-                        <m:Text id="_IDGenText41" text="{myComments>commentsText}" class="messageText"/>
-                        <m:Text id="_IDGenText31" text="{myComments>createdAt}" class="messageTime" />
-                    </m:VBox>
-                </m:HBox>
-        </m:CustomListItem>
-    </m:List>
-    </m:VBox>
-</m:ScrollContainer>
-</m:Dialog>
+        <m:customHeader>
+            <m:Toolbar id="_IDGenToolbar1">
+                <m:Title
+                    id="_IDGenTitle"
+                    text="Comment History"
+                />
+                <m:ToolbarSpacer id="_IDGenToolbarSpacer" />
+                <m:Button
+                    id="_IDGenButton"
+                    text="Close"
+                    press="onCloseHistoryDialog"
+                />
+            </m:Toolbar>
+        </m:customHeader>
+        <m:ScrollContainer
+            id="scrollContainer"
+            width="100%"
+            height="400px"
+            vertical="true"
+        >
+            <m:VBox
+                id="commentContainer"
+                width="100%"
+                class="comment-box"
+            >
+                <m:List
+                    id="chatList"
+                    items="{path : 'myComments>/Comments', parameters: {$orderby: 'createdAt desc'}}"
+                    class="chatList"
+                >
+                    <m:CustomListItem
+                        id="_IDGenCustomListItem1"
+                        class="items"
+                    >
+                        <m:HBox
+                            id="_IDGenHBox11"
+                            justifyContent="{= ${myComments>user} === 'C' ? 'Start' : 'End'}"
+                            alignItems="{= ${myComments>user} === 'C' ? 'Start' : 'End'}"
+                            class="messageContainer"
+                        >
+                            <m:VBox
+                                id="_IDGenVBox5"
+                                class="messageHeader"
+                            >
+                                <m:Text
+                                    id="_IDGenText51"
+                                    text="{myComments>user}"
+                                    class="messageTime"
+                                />
+                                <m:Text
+                                    id="_IDGenText41"
+                                    text="{myComments>commentsText}"
+                                    class="messageText"
+                                />
+                                <m:Text
+                                    id="_IDGenText31"
+                                    text="{myComments>createdAt}"
+                                    class="messageTime"
+                                />
+                            </m:VBox>
+                        </m:HBox>
+                    </m:CustomListItem>
+                </m:List>
+            </m:VBox>
+        </m:ScrollContainer>
+    </m:Dialog>
 </mvc:View>
