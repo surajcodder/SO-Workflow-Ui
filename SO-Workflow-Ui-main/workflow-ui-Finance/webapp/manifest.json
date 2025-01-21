@@ -1,0 +1,442 @@
+{
+  "_version": "1.26.0",
+  "sap.app": {
+    "id": "FinanceWorkflow.workflowuiFinance",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.8.4",
+      "toolsId": "d44e5 84d-d2c8-42a6-bee9-b2bfdb8bbcf2"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/opu/odata/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.82.2",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.f": {},
+        "sap.suite.ui.generic.template": {},
+        "sap.ui.comp": {},
+        "sap.ui.generic.app": {},
+        "sap.ui.table": {},
+        "sap.ushell": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "FinanceWorkflow.workflowuiFinance.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {}
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "async": true,
+        "viewPath": "FinanceWorkflow.workflowuiFinance.view",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "clearControlAggregation": false
+      },
+      "routes": [
+        {
+          "name": "RouteMyTaskUI",
+          "pattern": ":?query:",
+          "target": [
+            "TargetMyTaskUI"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetMyTaskUI": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "MyTaskUI",
+          "viewName": "MyTaskUI"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "FinanceWorkflow.workflowuiFinance.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "App"
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "FinanceWorkflow"
+  },
+  "sap.bpa.task": {
+    "_version": "1.0.0",
+    "outcomes": [
+      {
+        "id": "approve",
+        "label": "Approve"
+      },
+      {
+        "id": "reject",
+        "label": "Reject"
+      }
+    ],
+    "inputs": {
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "title": "input",
+      "type": "object",
+      "required": [
+        "CustomerID",
+        "Name",
+        "Address",
+        "link",
+        "companyName",
+        "contactPerson",
+        "contactNumber",
+        "email",
+        "VAN",
+        "jobTitle",
+        "Department",
+        "TaxId",
+        "Currency",
+        "Language",
+        "Country",
+        "City",
+        "Street",
+        "postalCode",
+        "address",
+        "bankName",
+        "accNumber",
+        "ifscCode",
+        "branch",
+        "accHoldersName",
+        "dueDate",
+        "commentLink",
+        "QuotationID",
+        "Status",
+        "docType",
+        "salesOrg",
+        "dealerCode",
+        "division",
+        "distributionChannels",
+        "POid",
+        "SOID",
+        "TotalPrice",
+        "TaxAmount",
+        "GrandTotal",
+        "POReleaseDate",
+        "companyCode",
+        "purchGroup",
+        "purchOrg",
+        "vendorCode"
+      ],
+      "properties": {
+        "companyCode": {
+          "type": "string",
+          "title": "companyCode",
+          "description": "Company Code"
+        },
+        "purchGroup": {
+          "type": "string",
+          "title": "purchGroup",
+          "description": "Purchase Group"
+        },
+        "purchOrg": {
+          "type": "string",
+          "title": "purchOrg",
+          "description": "Purchase Org"
+        },
+        "vendorCode": {
+          "type": "string",
+          "title": "vendorCode",
+          "description": "vendor Code"
+        },
+        "CustomerID": {
+          "type": "string",
+          "title": "Customer ID",
+          "description": "Unique identifier for the customer"
+        },
+        "Name": {
+          "type": "string",
+          "title": "Customer Name",
+          "description": "Name of the customer"
+        },
+        "Address": {
+          "type": "string",
+          "title": "Customer Address",
+          "description": "Address of the customer"
+        },
+        "link": {
+          "type": "string",
+          "title": "Link",
+          "description": "Link to relevant information"
+        },
+        "companyName": {
+          "type": "string",
+          "title": "Company Name",
+          "description": "Name of the Company"
+        },
+        "contactPerson": {
+          "type": "string",
+          "title": "Contact Person",
+          "description": "Name of the Contact Person"
+        },
+        "contactNumber": {
+          "type": "string",
+          "title": "Contact Number",
+          "description": "Phone number of the Contact Person"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email",
+          "description": "Email of the Contact Person"
+        },
+        "VAN": {
+          "type": "string",
+          "title": "VAN",
+          "description": "Vendor Account Number"
+        },
+        "jobTitle": {
+          "type": "string",
+          "title": "Job Title",
+          "description": "Job title of the contact person"
+        },
+        "Department": {
+          "type": "string",
+          "title": "Department",
+          "description": "Department of the contact person"
+        },
+        "TaxId": {
+          "type": "string",
+          "title": "TaxId",
+          "description": "Department of the contact person"
+        },
+        "Currency": {
+          "type": "string",
+          "title": "Currency",
+          "description": "Currency for the transaction"
+        },
+        "Language": {
+          "type": "string",
+          "title": "Language",
+          "description": "Preferred language for communication"
+        },
+        "Country": {
+          "type": "string",
+          "title": "Country",
+          "description": "Country of the Company"
+        },
+        "City": {
+          "type": "string",
+          "title": "City",
+          "description": "City of the Company"
+        },
+        "Street": {
+          "type": "string",
+          "title": "Street",
+          "description": "Street address of the Company"
+        },
+        "postalCode": {
+          "type": "string",
+          "title": "Postal Code",
+          "description": "Postal code of the Company location"
+        },
+        "address": {
+          "type": "string",
+          "title": "Address",
+          "description": "Address of the Company"
+        },
+        "bankName": {
+          "type": "string",
+          "title": "Bank Name",
+          "description": "Name of the Bank"
+        },
+        "accNumber": {
+          "type": "string",
+          "title": "Account Number",
+          "description": "Bank Account Number"
+        },
+        "ifscCode": {
+          "type": "string",
+          "title": "IFSC Code",
+          "description": "Bank's IFSC Code"
+        },
+        "branch": {
+          "type": "string",
+          "title": "Branch",
+          "description": "Bank Branch"
+        },
+        "accHoldersName": {
+          "type": "string",
+          "title": "Account Holder's Name",
+          "description": "Name of the Account Holder"
+        },
+        "dueDate": {
+          "type": "string",
+          "format": "date",
+          "title": "Due Date",
+          "description": "Due Date for the Payment"
+        },
+        "commentLink": {
+          "type": "string",
+          "title": "Comment Link",
+          "description": "Link to additional comments or information"
+        },
+        "QuotationID": {
+          "type": "string",
+          "title": "Quotation ID",
+          "description": "ID of the Quotation"
+        },
+        "Status": {
+          "type": "string",
+          "title": "Status",
+          "description": "Current status of the quotation or sales order"
+        },
+        "docType": {
+          "type": "string",
+          "title": "Document Type",
+          "description": "Type of document related to the order"
+        },
+        "salesOrg": {
+          "type": "string",
+          "title": "Sales Organization",
+          "description": "Sales organization related to the transaction"
+        },
+        "dealerCode": {
+          "type": "string",
+          "title": "Dealer Code",
+          "description": "Code of the dealer"
+        },
+        "deliveryLocation": {
+          "type": "string",
+          "title": "Delivery Location",
+          "description": "Location where the delivery is to be made"
+        },
+        "division": {
+          "type": "string",
+          "title": "Division",
+          "description": "Division related to the transaction"
+        },
+        "distributionChannels": {
+          "type": "string",
+          "title": "Distribution Channels",
+          "description": "Distribution channels involved in the transaction"
+        },
+        "POid": {
+          "type": "string",
+          "title": "PO ID",
+          "description": "ID related to PO"
+        },
+        "SOID": {
+          "type": "string",
+          "title": "Sales Order ID",
+          "description": "Unique identifier for the sales order"
+        },
+        "TotalPrice": {
+          "type": "string",
+          "title": "Total Price",
+          "description": "Total price of the order"
+        },
+        "TaxAmount": {
+          "type": "string",
+          "title": "Tax Amount",
+          "description": "Amount of tax applied to the order"
+        },
+        "GrandTotal": {
+          "type": "string",
+          "title": "Grand Total",
+          "description": "Total amount payable including tax"
+        },
+        "POReleaseDate": {
+          "type": "string",
+          "title": "Purchase Order Release Date",
+          "description": "Order Date Of Vehicle"
+        },
+        "Files": {
+          "type": "array",
+          "title": "Files ",
+          "description": "Files Link"
+        },
+        "patner": {
+          "type": "array",
+          "title": "patner",
+          "description": "Partner details"
+        },
+        "baseUrl": {
+          "type": "string",
+          "title": "Base Url",
+          "description": "Partner details"
+        }
+      }
+    },
+    "outputs": {
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "title": "output",
+      "type": "object",
+      "required": [
+        "comment"
+      ],
+      "properties": {
+        "comment": {
+          "type": "string",
+          "title": "comment",
+          "description": "Comment to Finance"
+        }
+      }
+    },
+    "category": "approval"
+  }
+}  
