@@ -36,7 +36,7 @@
             "ui5-task-zipper",
             "mbt"
         ]
-    },
+    }, 
     
     "sapuxLayer": "CUSTOMER_BASE"
 }
